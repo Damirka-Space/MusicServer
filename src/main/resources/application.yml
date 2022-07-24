@@ -1,0 +1,22 @@
+server:
+  port: 8090
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          auth-server:
+            provider: spring
+            client-id: server
+            client-secret: secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://127.0.0.1:8090/login/oauth2/code/{registrationId}"
+            scope: openid, profile
+            client-name: auth-server
+
+        provider:
+          spring:
+            issuer-uri: http://localhost:9000
+
+
