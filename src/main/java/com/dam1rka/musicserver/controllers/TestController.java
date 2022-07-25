@@ -1,6 +1,8 @@
 package com.dam1rka.musicserver.controllers;
 
 
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,23 @@ public class TestController {
     @ResponseBody
     public String test() {
         return "Hello, world!";
+    }
+
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/index";
+    }
+
+    @GetMapping("/index")
+    public String index() {
+        return "index";
+    }
+
+    @GetMapping(value = "/authorize", params = "grant_type=authorization_code")
+    public String authorizationCodeGrant(Model model,
+                                         @RegisteredOAuth2AuthorizedClient("auth-server-authorization-code")
+                                         OAuth2AuthorizedClient authorizedClient) {
+        return "index";
     }
 
     @GetMapping(value = "/authorized", params = OAuth2ParameterNames.ERROR)

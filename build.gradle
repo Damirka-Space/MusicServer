@@ -7,7 +7,12 @@ plugins {
 
 group = 'com.dam1rka'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
 
 repositories {
     maven { url 'https://repo.spring.io/release' }
