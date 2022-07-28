@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @EnableWebSecurity
 public class SecurityConfig {
@@ -29,6 +30,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
+                                .antMatchers("/test/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login().loginPage("/oauth2/authorization/auth-server")
@@ -36,5 +38,12 @@ public class SecurityConfig {
                     .oidcUserService(oidcUserService)
                 .and().successHandler(oAuth2AuthenticationSuccessHandler);
         return http.build();
+    }
+
+    @Bean
+    public CommonsMultipartResolver multipartResolver() {
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        multipartResolver.setMaxUploadSize(102400000); // 100 mb
+        return multipartResolver;
     }
 }
