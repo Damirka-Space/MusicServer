@@ -38,8 +38,6 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
             }
 
             newUser.setUsername(oauthUser.getName());
-            newUser.setEmail(oauthUser.getEmail());
-            newUser.setGender(oauthUser.getGender());
         } else {
             DefaultOidcUser oidcUser = (DefaultOidcUser) authentication.getPrincipal();
             if(Objects.nonNull(userService.getUserByUsername(oidcUser.getSubject()))) {
@@ -48,8 +46,6 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
             }
 
             newUser.setUsername(oidcUser.getSubject());
-            newUser.setEmail(oidcUser.getEmail());
-            newUser.setGender(oidcUser.getGender());
         }
 
         newUser.setPassword(alphaNumericString(30));

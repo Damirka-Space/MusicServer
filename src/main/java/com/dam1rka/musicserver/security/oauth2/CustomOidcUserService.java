@@ -1,6 +1,7 @@
 package com.dam1rka.musicserver.security.oauth2;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
@@ -24,11 +25,9 @@ public class CustomOidcUserService extends OidcUserService {
         OAuth2AccessToken accessToken = userRequest.getAccessToken();
         Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
 
-        // TODO
-        // 1) Fetch the authority information from the protected resource using accessToken
-
-
-        // 2) Map the authority information to one or more GrantedAuthority's and add it to mappedAuthorities
+        for (String authority : accessToken.getScopes()) {
+            mappedAuthorities.add(new SimpleGrantedAuthority("SCOPE_" + authority));
+        }
 
         oidcUser = new DefaultOidcUser(mappedAuthorities, oidcUser);
 
