@@ -46,7 +46,7 @@ public class AlbumService {
         return album;
     }
 
-    public TrackDto[] getTracks(Long id) throws RuntimeException {
+    public List<TrackDto> getTracks(Long id) throws RuntimeException {
         AlbumEntity album = getAlbum(id);
 
         List<TrackDto> tracks = new LinkedList<>();
@@ -72,14 +72,13 @@ public class AlbumService {
                         ath.add(author.getName());
                     }
 
-                    t.setAuthorId(ids.toArray(new Long[0]));
-                    t.setAuthor(ath.toArray(new String[0]));
+                    t.setAuthorId(ids);
+                    t.setAuthor(ath);
                 }
             }
             tracks.add(t);
         }
-
-        return tracks.toArray(new TrackDto[0]);
+        return tracks;
     }
 
     public byte[] loadImage(Long id) {

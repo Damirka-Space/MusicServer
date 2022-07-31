@@ -9,8 +9,8 @@ public class TrackDto {
 
     private Long id;
     private String title;
-    private Long[] authorId;
-    private String[] author;
+    private List<Long> authorId;
+    private List<String> author;
     private Long albumId;
     private String album;
 
