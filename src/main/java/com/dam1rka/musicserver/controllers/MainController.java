@@ -10,12 +10,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
 @Controller
 public class MainController {
 
     @GetMapping("/")
-    public String root() {
+    public String root(Principal principal, Model model) {
+        model.addAttribute("principal", principal);
         return "index";
     }
 

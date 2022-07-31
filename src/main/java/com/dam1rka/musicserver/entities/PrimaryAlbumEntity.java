@@ -1,8 +1,6 @@
 package com.dam1rka.musicserver.entities;
 
-
 import lombok.Data;
-
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.lang.NonNull;
@@ -13,8 +11,7 @@ import java.util.List;
 
 @Entity
 @Data
-public class AlbumEntity {
-
+public class PrimaryAlbumEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,7 +38,7 @@ public class AlbumEntity {
     @LastModifiedDate
     private Date updated;
 
-    public AlbumEntity() {
+    public PrimaryAlbumEntity() {
 
     }
 }

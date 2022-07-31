@@ -1,10 +1,12 @@
 package com.dam1rka.musicserver.entities;
 
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Date;
 
 @Entity
 @Data
@@ -17,12 +19,13 @@ public class TrackEntity {
     @NonNull
     private String title;
 
-    @NonNull
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<AuthorEntity> author;
+    @OneToOne
+    private PrimaryAlbumEntity album;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    private List<AlbumEntity> album;
+    @CreatedDate
+    private Date created;
+    @LastModifiedDate
+    private Date updated;
 
     public TrackEntity() {
 

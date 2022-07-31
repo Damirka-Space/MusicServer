@@ -15,7 +15,6 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService oAuth2UserService;
     private final CustomOidcUserService oidcUserService;
-
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     @Autowired
@@ -30,20 +29,23 @@ public class SecurityConfig {
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .antMatchers("/test/**").permitAll()
-                                .anyRequest().authenticated()
-                )
-                .oauth2Login().loginPage("/oauth2/authorization/auth-server")
-                    .userInfoEndpoint().userService(oAuth2UserService)
-                    .oidcUserService(oidcUserService)
-                .and().successHandler(oAuth2AuthenticationSuccessHandler);
+//                                .antMatchers("/**").permitAll()
+                                .anyRequest().permitAll()
+//                                .anyRequest().authenticated()
+                );
+//                .oauth2Login().loginPage("/oauth2/authorization/auth-server")
+//                    .userInfoEndpoint().userService(oAuth2UserService)
+//                    .oidcUserService(oidcUserService)
+//                .and().successHandler(oAuth2AuthenticationSuccessHandler);
+        http.csrf().disable();
+        http.cors().disable();
         return http.build();
     }
 
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(102400000); // 100 mb
+        multipartResolver.setMaxUploadSize(104857600); // 100 mb
         return multipartResolver;
     }
 }

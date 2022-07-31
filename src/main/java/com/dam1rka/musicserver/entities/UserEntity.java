@@ -1,5 +1,7 @@
 package com.dam1rka.musicserver.entities;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,8 +23,9 @@ public class UserEntity {
     private String password;
     private String firstname;
     private String lastname;
-
+    @CreatedDate
     private Date created;
+    @LastModifiedDate
     private Date updated;
 
     private String gender;
