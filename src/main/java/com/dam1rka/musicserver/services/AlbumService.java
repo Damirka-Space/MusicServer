@@ -11,6 +11,7 @@ import com.dam1rka.musicserver.repositories.PrimaryAlbumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +50,7 @@ public class AlbumService {
     public List<TrackDto> getTracks(Long id) throws RuntimeException {
         AlbumEntity album = getAlbum(id);
 
-        List<TrackDto> tracks = new LinkedList<>();
+        List<TrackDto> tracks = new ArrayList<>();
 
         for(TrackEntity track : album.getTracks()) {
             TrackDto t = new TrackDto();
@@ -65,8 +66,8 @@ public class AlbumService {
                 List<AuthorEntity> authors = primaryAlbum.getAuthors();
 
                 if(Objects.nonNull(authors)) {
-                    List<Long> ids = new LinkedList<>();
-                    List<String> ath = new LinkedList<>();
+                    List<Long> ids = new ArrayList<>();
+                    List<String> ath = new ArrayList<>();
                     for(AuthorEntity author : authors) {
                         ids.add(author.getId());
                         ath.add(author.getName());
