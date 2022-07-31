@@ -11,7 +11,6 @@ import com.dam1rka.musicserver.repositories.PrimaryAlbumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -47,10 +46,10 @@ public class AlbumService {
         return album;
     }
 
-    public List<TrackDto> getTracks(Long id) throws RuntimeException {
+    public TrackDto[] getTracks(Long id) throws RuntimeException {
         AlbumEntity album = getAlbum(id);
 
-        List<TrackDto> tracks = new ArrayList<>();
+        List<TrackDto> tracks = new LinkedList<>();
 
         for(TrackEntity track : album.getTracks()) {
             TrackDto t = new TrackDto();
@@ -66,20 +65,21 @@ public class AlbumService {
                 List<AuthorEntity> authors = primaryAlbum.getAuthors();
 
                 if(Objects.nonNull(authors)) {
-                    List<Long> ids = new ArrayList<>();
-                    List<String> ath = new ArrayList<>();
+                    List<Long> ids = new LinkedList<>();
+                    List<String> ath = new LinkedList<>();
                     for(AuthorEntity author : authors) {
                         ids.add(author.getId());
                         ath.add(author.getName());
                     }
 
-                    t.setAuthorId(ids);
-                    t.setAuthor(ath);
+                    t.setAuthorId(ids.toArray(new Long[0]));
+                    t.setAuthor(ath.toArray(new String[0]));
                 }
             }
             tracks.add(t);
         }
-        return tracks;
+
+        return tracks.toArray(new TrackDto[0]);
     }
 
     public byte[] loadImage(Long id) {
