@@ -92,7 +92,12 @@ public class TrackService {
                 tracks = new LinkedList<>();
             tracks.add(trackEntity);
             album.setTracks(tracks);
-            primaryAlbumRepository.save(album);
+
+            try {
+                primaryAlbumRepository.save(album);
+            } catch (Exception e) {
+                System.out.println(e.getMessage()); // ??? null ???
+            }
         }
 
         fileService.saveTrack(trackEntity.getId(), trackUploadDto.getTrack());
