@@ -14,6 +14,9 @@ import java.nio.file.Paths;
 @Service
 public class FileService {
 
+    @Value("${music-format}")
+    private String format;
+
     @Value("${file-dir}")
     private String fileDir;
 
@@ -60,7 +63,7 @@ public class FileService {
     }
 
     private void writeTrack(Long id, MultipartFile file, Path dir) throws RuntimeException {
-        Path filepath = Paths.get(dir.toString(), "Track-" + id + ".mp3");
+        Path filepath = Paths.get(dir.toString(), "Track-" + id + format);
 
         try (OutputStream os = Files.newOutputStream(filepath)) {
             os.write(file.getBytes());
@@ -70,7 +73,7 @@ public class FileService {
     }
 
     private byte[] readTrack(Long id, Path dir) throws RuntimeException {
-        Path filepath = Paths.get(dir.toString(), "Track-" + id + ".mp3");
+        Path filepath = Paths.get(dir.toString(), "Track-" + id + format);
 
         try (InputStream os = Files.newInputStream(filepath)) {
             return os.readAllBytes();

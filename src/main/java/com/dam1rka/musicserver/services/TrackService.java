@@ -4,12 +4,16 @@ import com.dam1rka.musicserver.dtos.TrackUploadDto;
 import com.dam1rka.musicserver.entities.*;
 import com.dam1rka.musicserver.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class TrackService {
+
+    @Value("${music-format}")
+    private String format;
 
     @Autowired
     private ImageRepository imageRepository;
@@ -32,7 +36,7 @@ public class TrackService {
     }
 
     public void saveTrack(TrackUploadDto trackUploadDto) {
-        if(!Objects.requireNonNull(trackUploadDto.getTrack().getOriginalFilename()).contains(".mp3"))
+        if(!Objects.requireNonNull(trackUploadDto.getTrack().getOriginalFilename()).contains(format))
             throw new RuntimeException("Invalid file");
 
         String title = trackUploadDto.getTitle();
@@ -45,29 +49,43 @@ public class TrackService {
         trackEntity = new TrackEntity();
         trackEntity.setTitle(title);
 
+        Date now = new Date();
+        trackEntity.setCreated(now);
+        trackEntity.setUpdated(now);
+
         // create album
 
         PrimaryAlbumEntity album = new PrimaryAlbumEntity();
         album.setTitle(trackUploadDto.getAlbum());
 
+        album.setCreated(now);
+        album.setUpdated(now);
+
             // create image
             {
-                ImageEnitiy imageEnitiy = new ImageEnitiy();
-                imageEnitiy.setUrl(Objects.requireNonNull(trackUploadDto.getImage().getOriginalFilename()));
-                imageEnitiy = imageRepository.save((imageEnitiy));
+                String url = Objects.requireNonNull(trackUploadDto.getImage().getOriginalFilename());
+                ImageEnitiy imageEnitiy = imageRepository.findByUrl(url);
 
-                fileService.saveImage(trackUploadDto.getImage());
+                if(Objects.isNull(imageEnitiy)) {
+                    imageEnitiy = new ImageEnitiy();
+                    imageEnitiy.setUrl(url);
+                    imageEnitiy.setCreated(now);
+                    imageEnitiy.setUpdated(now);
+                    imageEnitiy = imageRepository.save((imageEnitiy));
+                    fileService.saveImage(trackUploadDto.getImage());
+                }
 
                 album.setImage(imageEnitiy);
             }
 
             // create author
             {
-
                 AuthorEntity author = authorRepository.findByName(trackUploadDto.getAuthor());
                 if(Objects.isNull(author)){
                     author = new AuthorEntity();
                     author.setName(trackUploadDto.getAuthor());
+                    author.setCreated(now);
+                    author.setUpdated(now);
                     author = authorRepository.save(author);
                 }
 
@@ -75,7 +93,7 @@ public class TrackService {
             }
 
             album.setAlbumTypeEntity(albumTypeRepository.findById((long) (AlbumTypeEnum.ALBUM.ordinal() + 1)).orElse(null));
-            Date now = new Date();
+
 
             album.setCreated(now);
             album.setUpdated(now);
