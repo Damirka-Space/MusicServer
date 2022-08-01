@@ -55,11 +55,12 @@ public class TrackService {
 
         // create album
 
-        PrimaryAlbumEntity album = new PrimaryAlbumEntity();
-        album.setTitle(trackUploadDto.getAlbum());
+        PrimaryAlbumEntity album = primaryAlbumRepository.findByTitle(trackUploadDto.getAlbum());
 
-        album.setCreated(now);
-        album.setUpdated(now);
+        if(Objects.isNull(album)) {
+            album = new PrimaryAlbumEntity();
+            album.setTitle(trackUploadDto.getAlbum());
+            album.setCreated(now);
 
             // create image
             {
@@ -93,12 +94,11 @@ public class TrackService {
             }
 
             album.setAlbumTypeEntity(albumTypeRepository.findById((long) (AlbumTypeEnum.ALBUM.ordinal() + 1)).orElse(null));
+        }
 
+        album.setUpdated(now);
 
-            album.setCreated(now);
-            album.setUpdated(now);
-
-            album = primaryAlbumRepository.save(album);
+        album = primaryAlbumRepository.save(album);
 
         trackEntity.setAlbum(album);
         trackEntity = trackRepository.save(trackEntity);
