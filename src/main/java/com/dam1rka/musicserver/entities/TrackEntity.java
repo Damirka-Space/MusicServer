@@ -19,7 +19,7 @@ public class TrackEntity {
     @NonNull
     private String title;
 
-    @OneToOne
+    @ManyToOne
     private PrimaryAlbumEntity album;
 
     @CreatedDate
