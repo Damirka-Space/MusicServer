@@ -1,5 +1,6 @@
 package com.dam1rka.musicserver.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,6 +21,7 @@ public class TrackEntity {
     private String title;
 
     @ManyToOne
+    @JsonBackReference
     private PrimaryAlbumEntity album;
 
     @CreatedDate
