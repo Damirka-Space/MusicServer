@@ -98,11 +98,6 @@ public class TrackService {
 
         album.setUpdated(now);
 
-        album = primaryAlbumRepository.save(album);
-
-        trackEntity.setAlbum(album);
-        trackEntity = trackRepository.save(trackEntity);
-
         // Add track to album
         {
             List<TrackEntity> tracks = album.getTracks();
@@ -117,6 +112,9 @@ public class TrackService {
                 System.out.println(e.getMessage()); // ??? null ???
             }
         }
+
+        trackEntity.setAlbum(album);
+        trackEntity = trackRepository.save(trackEntity);
 
         fileService.saveTrack(trackEntity.getId(), trackUploadDto.getTrack());
     }
