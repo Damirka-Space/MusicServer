@@ -21,6 +21,8 @@ public class TrackEntity {
     @NonNull
     private String title;
 
+    private Integer duration;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonBackReference
     private PrimaryAlbumEntity album;
