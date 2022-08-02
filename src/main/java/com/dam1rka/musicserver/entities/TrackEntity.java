@@ -8,6 +8,7 @@ import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -20,9 +21,12 @@ public class TrackEntity {
     @NonNull
     private String title;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonBackReference
     private PrimaryAlbumEntity album;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<AuthorEntity> authors;
 
     @CreatedDate
     private Date created;

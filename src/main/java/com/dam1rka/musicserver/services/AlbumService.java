@@ -57,24 +57,24 @@ public class AlbumService {
             t.setId(track.getId());
             t.setTitle(track.getTitle());
 
+            List<AuthorEntity> authors = track.getAuthors();
+
+            if(Objects.nonNull(authors)) {
+                List<Long> ids = new LinkedList<>();
+                List<String> ath = new LinkedList<>();
+                for(AuthorEntity author : authors) {
+                    ids.add(author.getId());
+                    ath.add(author.getName());
+                }
+
+                t.setAuthorId(ids);
+                t.setAuthor(ath);
+            }
+
             PrimaryAlbumEntity primaryAlbum = track.getAlbum();
             if(Objects.nonNull(primaryAlbum)) {
                 t.setAlbumId(primaryAlbum.getId());
                 t.setAlbum(primaryAlbum.getTitle());
-
-                List<AuthorEntity> authors = primaryAlbum.getAuthors();
-
-                if(Objects.nonNull(authors)) {
-                    List<Long> ids = new LinkedList<>();
-                    List<String> ath = new LinkedList<>();
-                    for(AuthorEntity author : authors) {
-                        ids.add(author.getId());
-                        ath.add(author.getName());
-                    }
-
-                    t.setAuthorId(ids);
-                    t.setAuthor(ath);
-                }
             }
             tracks.add(t);
         }

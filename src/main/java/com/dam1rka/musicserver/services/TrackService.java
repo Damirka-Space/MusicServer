@@ -53,6 +53,27 @@ public class TrackService {
         trackEntity.setCreated(now);
         trackEntity.setUpdated(now);
 
+        // create author for track
+        {
+            List<AuthorEntity> authors = new LinkedList<>();
+
+            String[] a_str = trackUploadDto.getAuthor().split(", ");
+
+            for(String a : a_str) {
+                AuthorEntity author = authorRepository.findByName(a);
+                if(Objects.isNull(author)){
+                    author = new AuthorEntity();
+                    author.setName(a);
+                    author.setCreated(now);
+                    author.setUpdated(now);
+                    author = authorRepository.save(author);
+                }
+                authors.add(author);
+            }
+
+            trackEntity.setAuthors(authors);
+        }
+
         // create album
 
         PrimaryAlbumEntity album = primaryAlbumRepository.findByTitle(trackUploadDto.getAlbum());
@@ -79,21 +100,29 @@ public class TrackService {
                 album.setImage(imageEnitiy);
             }
 
-            // create author
+            // create author for album
             {
-                AuthorEntity author = authorRepository.findByName(trackUploadDto.getAuthor());
-                if(Objects.isNull(author)){
-                    author = new AuthorEntity();
-                    author.setName(trackUploadDto.getAuthor());
-                    author.setCreated(now);
-                    author.setUpdated(now);
-                    author = authorRepository.save(author);
+                List<AuthorEntity> authors = album.getAuthors();
+
+                if(Objects.isNull(authors)) {
+                    authors = new LinkedList<>();
+                    String[] a_str = trackUploadDto.getAlbums_author().split(", ");
+
+                    for(String a : a_str) {
+                        AuthorEntity author = authorRepository.findByName(a);
+                        if(Objects.isNull(author)){
+                            author = new AuthorEntity();
+                            author.setName(a);
+                            author.setCreated(now);
+                            author.setUpdated(now);
+                            author = authorRepository.save(author);
+                        }
+                        authors.add(author);
+                    }
+
+                    album.setAuthors(authors);
                 }
-
-                album.setAuthors(Collections.singletonList(author));
             }
-
-            album.setAlbumTypeEntity(albumTypeRepository.findById((long) (AlbumTypeEnum.ALBUM.ordinal() + 1)).orElse(null));
         }
 
         album.setUpdated(now);
@@ -106,8 +135,13 @@ public class TrackService {
         // Add track to album
         {
             List<TrackEntity> tracks = album.getTracks();
-            if(Objects.isNull(tracks))
+            if(Objects.isNull(tracks)) {
                 tracks = new LinkedList<>();
+                album.setAlbumTypeEntity(albumTypeRepository.findById((long) (AlbumTypeEnum.SINGLE.ordinal() + 1)).orElse(null));
+            }
+            else
+                album.setAlbumTypeEntity(albumTypeRepository.findById((long) (AlbumTypeEnum.ALBUM.ordinal() + 1)).orElse(null));
+
             tracks.add(trackEntity);
             album.setTracks(tracks);
 

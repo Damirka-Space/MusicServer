@@ -8,6 +8,7 @@ public class TrackUploadDto {
     private String title;
     private String author;
     private String album;
+    private String albums_author;
     private MultipartFile image;
     private MultipartFile track;
 }
