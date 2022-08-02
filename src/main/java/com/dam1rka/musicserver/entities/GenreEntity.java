@@ -1,42 +1,33 @@
 package com.dam1rka.musicserver.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.lang.NonNull;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Data
-public class TrackEntity {
+public class GenreEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NonNull
-    private String title;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JsonBackReference
-    private PrimaryAlbumEntity album;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    private List<AuthorEntity> authors;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    private List<GenreEntity> genres;
+    private String name;
 
     @CreatedDate
     private Date created;
     @LastModifiedDate
     private Date updated;
 
-    public TrackEntity() {
+    public GenreEntity() {
 
     }
 }

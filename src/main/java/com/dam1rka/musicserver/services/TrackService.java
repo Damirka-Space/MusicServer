@@ -17,13 +17,18 @@ public class TrackService {
 
     @Autowired
     private ImageRepository imageRepository;
+
     @Autowired
     private AlbumTypeRepository albumTypeRepository;
+
     @Autowired
     private PrimaryAlbumRepository primaryAlbumRepository;
 
     @Autowired
     private AuthorRepository authorRepository;
+
+    @Autowired
+    private GenreRepository genreRepository;
 
     private TrackRepository trackRepository;
 
@@ -72,6 +77,27 @@ public class TrackService {
             }
 
             trackEntity.setAuthors(authors);
+        }
+
+        // load genres for track
+        {
+            List<GenreEntity> genres = new LinkedList<>();
+
+            String[] g_str = trackUploadDto.getGenre().split(", ");
+
+            for(String g : g_str) {
+                GenreEntity genre = genreRepository.findByName(g);
+                if(Objects.isNull(genre)){
+                    genre = new GenreEntity();
+                    genre.setName(g);
+                    genre.setCreated(now);
+                    genre.setUpdated(now);
+                    genre = genreRepository.save(genre);
+                }
+                genres.add(genre);
+            }
+
+            trackEntity.setGenres(genres);
         }
 
         // create album
