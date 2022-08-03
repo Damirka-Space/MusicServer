@@ -14,8 +14,11 @@ import java.nio.file.Paths;
 @Service
 public class FileService {
 
-    @Value("${music-format}")
-    private String format;
+    @Value("${music.format}")
+    private String audioFormat;
+
+    @Value("${image.format}")
+    private String imageFormat;
 
     @Value("${file-dir}")
     private String fileDir;
@@ -26,18 +29,22 @@ public class FileService {
     @Value("${image-dir}")
     private String imageDir;
 
-    private void write(MultipartFile file, Path dir) throws RuntimeException {
-        Path filepath = Paths.get(dir.toString(), file.getOriginalFilename());
-
+    private void write(byte[] file, Path filepath) throws RuntimeException {
         try (OutputStream os = Files.newOutputStream(filepath)) {
-            os.write(file.getBytes());
+            os.write(file);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    private byte[] read(String file, Path dir) throws RuntimeException {
-        Path filepath = Paths.get(dir.toString(), file);
 
+    private void write(MultipartFile file, Path filepath) throws RuntimeException {
+        try {
+            write(file.getBytes(), filepath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private byte[] read(Path filepath) throws RuntimeException {
         try (InputStream os = Files.newInputStream(filepath)) {
             return os.readAllBytes();
         } catch (IOException e) {
@@ -45,45 +52,35 @@ public class FileService {
         }
     }
 
+    private void writeTrack(Long id, MultipartFile file) throws RuntimeException {
+        write(file, Paths.get(tracksDir, "Track-" + id + "." + audioFormat));
+    }
+
+    private byte[] readTrack(Long id) throws RuntimeException {
+        return read(Paths.get(tracksDir, "Track-" + id + "." + audioFormat));
+    }
 
     public void saveFile(MultipartFile file) {
-        write(file, Path.of(fileDir));
+        write(file, Path.of(fileDir + file.getOriginalFilename()));
+    }
+
+    public void saveImage(MultipartFile file, String album) {
+        write(file, Path.of(imageDir + album + "." + imageFormat));
+    }
+    public void saveImage(byte[] file, String album) {
+        write(file, Path.of(imageDir + album + "." + imageFormat));
+    }
+
+    public byte[] loadImage(String album) {
+        return read(Path.of(imageDir + album + "." + imageFormat));
     }
 
     public void saveTrack(Long id, MultipartFile file) throws RuntimeException {
-        writeTrack(id, file, Path.of(tracksDir));
-    }
-
-    public void saveImage(MultipartFile file) {
-        write(file, Path.of(imageDir));
-    }
-
-    public byte[] loadImage(String url) {
-        return read(url, Path.of(imageDir));
-    }
-
-    private void writeTrack(Long id, MultipartFile file, Path dir) throws RuntimeException {
-        Path filepath = Paths.get(dir.toString(), "Track-" + id + format);
-
-        try (OutputStream os = Files.newOutputStream(filepath)) {
-            os.write(file.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private byte[] readTrack(Long id, Path dir) throws RuntimeException {
-        Path filepath = Paths.get(dir.toString(), "Track-" + id + format);
-
-        try (InputStream os = Files.newInputStream(filepath)) {
-            return os.readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        writeTrack(id, file);
     }
 
     public byte[] loadTrack(Long id) {
-        return readTrack(id, Path.of(tracksDir));
+        return readTrack(id);
     }
 
 }

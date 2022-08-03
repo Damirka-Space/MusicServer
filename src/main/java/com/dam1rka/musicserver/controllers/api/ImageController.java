@@ -28,4 +28,22 @@ public class ImageController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping(value = "/small/get/{id}", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<?> getSmallImage(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(imageService.getSmailImage(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/medium/get/{id}", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<?> getMediumImage(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(imageService.getMediumImage(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

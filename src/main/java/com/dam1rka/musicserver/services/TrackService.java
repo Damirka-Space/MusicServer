@@ -12,11 +12,11 @@ import java.util.*;
 @Service
 public class TrackService {
 
-    @Value("${music-format}")
+    @Value("${music.format}")
     private String format;
 
     @Autowired
-    private ImageRepository imageRepository;
+    private ImageService imageService;
 
     @Autowired
     private AlbumTypeRepository albumTypeRepository;
@@ -111,19 +111,7 @@ public class TrackService {
 
             // create image
             {
-                String url = Objects.requireNonNull(trackUploadDto.getImage().getOriginalFilename());
-                ImageEnitiy imageEnitiy = imageRepository.findByUrl(url);
-
-                if(Objects.isNull(imageEnitiy)) {
-                    imageEnitiy = new ImageEnitiy();
-                    imageEnitiy.setUrl(url);
-                    imageEnitiy.setCreated(now);
-                    imageEnitiy.setUpdated(now);
-                    imageEnitiy = imageRepository.save((imageEnitiy));
-                    fileService.saveImage(trackUploadDto.getImage());
-                }
-
-                album.setImage(imageEnitiy);
+                album.setImage(imageService.saveImage(trackUploadDto.getImage(), album.getTitle()));
             }
 
             // create author for album
