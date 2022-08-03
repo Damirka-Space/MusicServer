@@ -18,16 +18,16 @@ import java.util.Objects;
 @Service
 public class AlbumService {
 
-    @Autowired
     private PrimaryAlbumRepository primaryAlbumRepository;
     private AlbumRepository albumRepository;
 
-    private FileService fileService;
+    private ImageService imageService;
 
     @Autowired
-    public AlbumService(AlbumRepository albumRepository, FileService fileService) {
+    public AlbumService(PrimaryAlbumRepository primaryAlbumRepository,AlbumRepository albumRepository, ImageService imageService) {
+        this.primaryAlbumRepository = primaryAlbumRepository;
         this.albumRepository = albumRepository;
-        this.fileService = fileService;
+        this.imageService = imageService;
     }
 
     public AlbumEntity getAlbum(Long id) throws RuntimeException {
@@ -81,7 +81,7 @@ public class AlbumService {
         return tracks;
     }
 
-    public byte[] loadImage(Long id) {
+    private PrimaryAlbumEntity loadPrimaryAlbum(Long id) {
         PrimaryAlbumEntity album = getPrimaryAlbum(id);
         if(Objects.isNull(album))
             throw new RuntimeException("Album not found");
@@ -89,7 +89,19 @@ public class AlbumService {
         if(Objects.isNull(album.getImage()))
             throw new RuntimeException("No image in album");
 
-        return fileService.loadImage(album.getImage().getUrl());
+        return  album;
+    }
+
+    public byte[] loadImage(Long id) {
+        return imageService.getImage(loadPrimaryAlbum(id).getImage().getId());
+    }
+
+    public byte[] loadSmallImage(Long id) {
+        return imageService.getSmailImage(loadPrimaryAlbum(id).getImage().getId());
+    }
+
+    public byte[] loadMediumImage(Long id) {
+        return imageService.getMediumImage(loadPrimaryAlbum(id).getImage().getId());
     }
 
 }
