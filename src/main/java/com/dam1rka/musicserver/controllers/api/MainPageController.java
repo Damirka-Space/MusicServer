@@ -1,6 +1,5 @@
 package com.dam1rka.musicserver.controllers.api;
 
-import com.dam1rka.musicserver.dtos.EntryMainDto;
 import com.dam1rka.musicserver.services.MainPageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
