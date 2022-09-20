@@ -15,7 +15,7 @@ public class Scheduler {
     }
 
     // Run every day
-    @Scheduled(cron = "0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void updatePlaylistOfDay() {
         playlistService.updatePlaylistOfDay();
 
@@ -23,7 +23,7 @@ public class Scheduler {
     }
 
     // Run every week
-    @Scheduled(cron = "0 0 * * 0")
+    @Scheduled(cron = "0 0 0 * * 0")
     public void updatePlaylistOfWeek() {
         playlistService.updatePlaylistOfWeek();
     }
