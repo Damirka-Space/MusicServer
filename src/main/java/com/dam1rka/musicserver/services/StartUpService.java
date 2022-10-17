@@ -35,9 +35,6 @@ public class StartUpService {
             }
         }
 
-        playlistService.updateAllInOnePlaylist();
-        playlistService.updatePlaylistOfWeek();
-        playlistService.updatePlaylistOfDay();
-
+        playlistService.updateAll();
     }
 }

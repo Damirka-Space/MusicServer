@@ -16,16 +16,19 @@ public class PlaylistService {
     private AuthorRepository authorRepository;
     private ImageRepository imageRepository;
     private TrackRepository trackRepository;
+    private GenreRepository genreRepository;
 
     @Autowired
     public PlaylistService(BlockRepository blockRepository, AlbumRepository albumRepository, AuthorRepository authorRepository,
-                            AlbumTypeRepository albumTypeRepository, ImageRepository imageRepository, TrackRepository trackRepository) {
+                            AlbumTypeRepository albumTypeRepository, ImageRepository imageRepository, TrackRepository trackRepository,
+                           GenreRepository genreRepository) {
         this.blockRepository = blockRepository;
         this.albumRepository = albumRepository;
         this.authorRepository = authorRepository;
         this.albumTypeRepository = albumTypeRepository;
         this.imageRepository = imageRepository;
         this.trackRepository = trackRepository;
+        this.genreRepository = genreRepository;
     }
 
     private AlbumEntity updateAlbum(Long id, String title, String description, String imageUrl, List<TrackEntity> tracks) {
@@ -107,6 +110,14 @@ public class PlaylistService {
         return trackRepository.findAllById(ids);
     }
 
+    public void updateAll() {
+        updatePlaylistOfDay();
+        updatePlaylistOfWeek();
+        updateAllInOnePlaylist();
+
+        updateMetalPlaylist();
+    }
+
     public void updatePlaylistOfDay() {
         List<TrackEntity> dayTracks = randomTracks(10);
 
@@ -130,6 +141,43 @@ public class PlaylistService {
         AlbumEntity album = updateAlbum(1L, "Всё в одном", "Первый и не повторимый", "InOne", allTracks);
 
         updateWelcomeBlock(albumRepository.save(album));
+    }
+
+    public void updateMetalPlaylist() {
+        List<TrackEntity> metalTracks = trackRepository.findAllByGenre(genreRepository.findByName("Альтернативный метал"));
+
+        AlbumEntity album = updateAlbum(4L, "Метал", "альтернатива", "", metalTracks);
+
+        updateMetalBlock(albumRepository.save(album));
+    }
+
+    private void updateMetalBlock(AlbumEntity album) {
+        BlockEntity block = blockRepository.findById(2L).orElse(null);
+
+        List<AlbumEntity> albums;
+
+        if(Objects.isNull(block)) {
+            block = new BlockEntity();
+            block.setId(2L);
+            block.setTitle("Любителям металла посвящается!");
+            albums = Collections.singletonList(album);
+        } else {
+            albums = block.getAlbums();
+
+            boolean exist = false;
+
+            for(AlbumEntity al : albums) {
+                if(Objects.equals(al.getId(), album.getId())) {
+                    exist = true;
+                    break;
+                }
+            }
+            if(!exist)
+                albums.add(album);
+        }
+
+        block.setAlbums(albums);
+        blockRepository.save(block);
     }
 
 }
