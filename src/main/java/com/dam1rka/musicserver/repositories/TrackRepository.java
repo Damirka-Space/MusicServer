@@ -10,6 +10,6 @@ import java.util.List;
 public interface TrackRepository extends JpaRepository<TrackEntity, Long> {
     TrackEntity findByTitle(String title);
 
-    @Query(value = "SELECT * FROM TrackEntity te WHERE te.genres = :genres", nativeQuery = true)
-    List<TrackEntity> findAllByGenre(List<GenreEntity> genres);
+//    @Query("SELECT ALL FROM TrackEntity te WHERE te.genres = :genres")
+    List<TrackEntity> findAllByGenres(List<GenreEntity> genres);
 }
