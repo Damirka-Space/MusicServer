@@ -144,7 +144,7 @@ public class PlaylistService {
     }
 
     public void updateMetalPlaylist() {
-        List<TrackEntity> metalTracks = trackRepository.findAllByGenre(genreRepository.findByName("Альтернативный метал"));
+        List<TrackEntity> metalTracks = trackRepository.findAllByGenre(Collections.singletonList(genreRepository.findByName("Альтернативный метал")));
 
         AlbumEntity album = updateAlbum(4L, "Метал", "альтернатива", "", metalTracks);
 
