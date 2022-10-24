@@ -6,7 +6,7 @@ import com.dam1rka.musicserver.repositories.BlockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.List;
 
 @Service
 public class MainPageService {
@@ -16,9 +16,9 @@ public class MainPageService {
 
     public EntryMainDto loadMainBlocks() {
         EntryMainDto entryMainDto = new EntryMainDto();
-        BlockEntity block = blockRepository.findById(1L).orElse(null);
+        List<BlockEntity> blocks = blockRepository.findAll();
 
-        entryMainDto.setBlocks(Collections.singletonList(block));
+        entryMainDto.setBlocks(blocks);
 
         return entryMainDto;
     }
