@@ -44,7 +44,7 @@ public class AlbumController {
     @GetMapping(value="/image/get/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<?> getImage(@PathVariable("id") Long id) {
         try {
-            return ResponseEntity.ok().cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS)).body(albumService.loadImage(id));
+            return ResponseEntity.ok(albumService.loadImage(id));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
