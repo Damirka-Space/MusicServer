@@ -153,7 +153,7 @@ public class PlaylistService {
         } };
         List<TrackEntity> metalTracks = trackRepository.findAllByGenres(genres);
 
-        AlbumEntity album = updateAlbum(4L, "Метал", "альтернатива", "", metalTracks);
+        AlbumEntity album = updateAlbum(4L, "Метал", "альтернатива", "metall_test", metalTracks);
 
         updateMetalBlock(albumRepository.save(album));
     }
