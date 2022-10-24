@@ -96,6 +96,9 @@ public class PlaylistService {
     private List<TrackEntity> randomTracks(int count) {
         long tracksCount = trackRepository.count();
 
+        if(tracksCount < count)
+            count = (int) tracksCount;
+
         List<Long> ids = new LinkedList<>();
 
         for(int i = 0; i < count; i++) {
@@ -144,7 +147,11 @@ public class PlaylistService {
     }
 
     public void updateMetalPlaylist() {
-        List<TrackEntity> metalTracks = trackRepository.findAllByGenres(Collections.singletonList(genreRepository.findByName("Альтернативный метал")));
+        List<String> genres = new LinkedList<>() {{
+            add("Альтернатива");
+            add("Альтернативный метал");
+        } };
+        List<TrackEntity> metalTracks = trackRepository.findAllByGenres(genres);
 
         AlbumEntity album = updateAlbum(4L, "Метал", "альтернатива", "", metalTracks);
 
