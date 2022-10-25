@@ -182,14 +182,4 @@ public class TrackService {
         return fileService.loadTrack(id);
     }
 
-    public InputStream loadStreamTrackById(Long id) {
-        TrackEntity track = getTrackById(id);
-
-        if(Objects.isNull(track)) {
-            throw new RuntimeException("Track not found");
-        }
-        return fileService.streamReadTrack(id);
-    }
-
-
 }
