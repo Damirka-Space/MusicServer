@@ -7,7 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TrackService {
@@ -176,6 +180,15 @@ public class TrackService {
             throw new RuntimeException("Track not found");
         }
         return fileService.loadTrack(id);
+    }
+
+    public InputStream loadStreamTrackById(Long id) {
+        TrackEntity track = getTrackById(id);
+
+        if(Objects.isNull(track)) {
+            throw new RuntimeException("Track not found");
+        }
+        return fileService.streamReadTrack(id);
     }
 
 

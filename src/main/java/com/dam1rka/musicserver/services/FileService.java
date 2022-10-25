@@ -60,6 +60,14 @@ public class FileService {
         return read(Paths.get(tracksDir, "Track-" + id + "." + audioFormat));
     }
 
+    public InputStream streamReadTrack(Long id) {
+        try {
+            return Files.newInputStream(Paths.get(tracksDir, "Track-" + id + "." + audioFormat));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void saveFile(MultipartFile file) {
         write(file, Path.of(fileDir + file.getOriginalFilename()));
     }
