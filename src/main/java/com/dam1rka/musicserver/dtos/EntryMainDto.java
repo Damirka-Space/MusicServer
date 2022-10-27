@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 public class EntryMainDto {
 
-    List<BlockEntity> blocks;
+    List<BlockDto> blocks;
 
 }

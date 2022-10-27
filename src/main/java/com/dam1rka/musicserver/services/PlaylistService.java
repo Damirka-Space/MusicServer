@@ -3,6 +3,7 @@ package com.dam1rka.musicserver.services;
 import com.dam1rka.musicserver.entities.*;
 import com.dam1rka.musicserver.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -75,22 +76,28 @@ public class PlaylistService {
             block.setTitle("Добро пожаловать!");
             albums = Collections.singletonList(album);
         } else {
-            albums = block.getAlbums();
-
-            boolean exist = false;
-
-            for(AlbumEntity al : albums) {
-                if(Objects.equals(al.getId(), album.getId())) {
-                    exist = true;
-                    break;
-                }
-            }
-            if(!exist)
-                albums.add(album);
+            albums = getAlbumEntities(album, block);
         }
 
         block.setAlbums(albums);
         blockRepository.save(block);
+    }
+
+    @NonNull
+    private List<AlbumEntity> getAlbumEntities(AlbumEntity album, BlockEntity block) {
+        List<AlbumEntity> albums = block.getAlbums();
+
+        boolean exist = false;
+
+        for(AlbumEntity al : albums) {
+            if(Objects.equals(al.getId(), album.getId())) {
+                exist = true;
+                break;
+            }
+        }
+        if(!exist)
+            albums.add(album);
+        return albums;
     }
 
     private List<TrackEntity> randomTracks(int count) {
@@ -169,18 +176,7 @@ public class PlaylistService {
             block.setTitle("Любителям металла посвящается!");
             albums = Collections.singletonList(album);
         } else {
-            albums = block.getAlbums();
-
-            boolean exist = false;
-
-            for(AlbumEntity al : albums) {
-                if(Objects.equals(al.getId(), album.getId())) {
-                    exist = true;
-                    break;
-                }
-            }
-            if(!exist)
-                albums.add(album);
+            albums = getAlbumEntities(album, block);
         }
 
         block.setAlbums(albums);
