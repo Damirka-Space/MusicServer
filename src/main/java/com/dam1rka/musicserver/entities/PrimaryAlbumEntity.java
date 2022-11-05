@@ -30,7 +30,7 @@ public class PrimaryAlbumEntity {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<AuthorEntity> authors;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<TrackEntity> tracks;
 
     @CreatedDate
