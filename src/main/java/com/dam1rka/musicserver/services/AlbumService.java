@@ -6,8 +6,6 @@ import com.dam1rka.musicserver.dtos.TrackUploadNewDto;
 import com.dam1rka.musicserver.entities.*;
 import com.dam1rka.musicserver.repositories.*;
 import com.google.gson.Gson;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;

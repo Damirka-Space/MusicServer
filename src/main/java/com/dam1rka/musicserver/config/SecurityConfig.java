@@ -45,7 +45,7 @@ public class SecurityConfig {
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(104857600); // 100 mb
+        multipartResolver.setMaxUploadSize(1073741824); // 1 gb
         return multipartResolver;
     }
 }
