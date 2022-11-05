@@ -178,7 +178,12 @@ public class PlaylistService {
         PrimaryAlbumEntity solai = primaryAlbumRepository.findByTitle("Solai");
         PrimaryAlbumEntity afterDark = primaryAlbumRepository.findByTitle("After Dark");
         if(Objects.isNull(solai) || Objects.isNull(afterDark))
+        {
+            System.out.println("Not found albums");
+            System.out.println(solai);
+            System.out.println(afterDark);
             return;
+        }
 
         updateBlock(fromPrimary(solai), "Вперёд в будущее!", 3L);
         updateBlock(fromPrimary(afterDark), "Вперёд в будущее!", 3L);

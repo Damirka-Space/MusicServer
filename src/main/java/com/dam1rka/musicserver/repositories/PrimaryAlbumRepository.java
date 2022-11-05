@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PrimaryAlbumRepository extends JpaRepository<PrimaryAlbumEntity, Long> {
 
-    PrimaryAlbumEntity findByTitle(String album);
+    PrimaryAlbumEntity findByTitle(String title);
 }
