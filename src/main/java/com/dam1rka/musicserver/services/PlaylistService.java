@@ -207,6 +207,8 @@ public class PlaylistService {
             album.setAlbumTypeEntity(primaryAlbum.getAlbumTypeEntity());
 
             album.setTracks(primaryAlbum.getTracks());
+
+            albumRepository.save(album);
         }
         return album;
     }
