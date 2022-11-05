@@ -11,10 +11,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class AlbumService {
@@ -46,6 +43,8 @@ public class AlbumService {
         AlbumEntity album = albumRepository.findById(id).orElse(null);
         if(Objects.isNull(album))
             throw new RuntimeException("Album not found");
+
+        album.getTracks().sort(Comparator.comparing(TrackEntity::getId).reversed());
 
         return album;
     }

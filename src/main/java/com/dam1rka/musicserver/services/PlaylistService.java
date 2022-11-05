@@ -185,8 +185,8 @@ public class PlaylistService {
             return;
         }
 
-        updateBlock(fromPrimary(solai), "Вперёд в будущее!", 3L);
-        updateBlock(fromPrimary(afterDark), "Вперёд в будущее!", 3L);
+        updateBlock(fromPrimary(solai), "Вперёд в будущее!", 5L);
+        updateBlock(fromPrimary(afterDark), "Вперёд в будущее!", 5L);
     }
 
     private AlbumEntity fromPrimary(PrimaryAlbumEntity primaryAlbum) {
