@@ -27,10 +27,10 @@ public class PrimaryAlbumEntity {
     @OneToOne(fetch = FetchType.EAGER)
     private ImageEnitiy image;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<AuthorEntity> authors;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<TrackEntity> tracks;
 
     @CreatedDate
