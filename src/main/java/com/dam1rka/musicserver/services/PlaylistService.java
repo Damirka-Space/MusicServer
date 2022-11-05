@@ -7,12 +7,14 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PlaylistService {
 
     private BlockRepository blockRepository;
     private AlbumRepository albumRepository;
+    private PrimaryAlbumRepository primaryAlbumRepository;
     private AlbumTypeRepository albumTypeRepository;
     private AuthorRepository authorRepository;
     private ImageRepository imageRepository;
@@ -22,7 +24,7 @@ public class PlaylistService {
     @Autowired
     public PlaylistService(BlockRepository blockRepository, AlbumRepository albumRepository, AuthorRepository authorRepository,
                             AlbumTypeRepository albumTypeRepository, ImageRepository imageRepository, TrackRepository trackRepository,
-                           GenreRepository genreRepository) {
+                           GenreRepository genreRepository, PrimaryAlbumRepository primaryAlbumRepository) {
         this.blockRepository = blockRepository;
         this.albumRepository = albumRepository;
         this.authorRepository = authorRepository;
@@ -30,6 +32,7 @@ public class PlaylistService {
         this.imageRepository = imageRepository;
         this.trackRepository = trackRepository;
         this.genreRepository = genreRepository;
+        this.primaryAlbumRepository = primaryAlbumRepository;
     }
 
     private AlbumEntity updateAlbum(Long id, String title, String description, String imageUrl, List<TrackEntity> tracks) {
@@ -126,6 +129,12 @@ public class PlaylistService {
         updateAllInOnePlaylist();
 
         updateMetalPlaylist();
+
+        try {
+            updateElectronicPlaylist();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void updatePlaylistOfDay() {
@@ -162,18 +171,49 @@ public class PlaylistService {
 
         AlbumEntity album = updateAlbum(4L, "Метал", "альтернатива", "metall_test", metalTracks);
 
-        updateMetalBlock(albumRepository.save(album));
+        updateBlock(albumRepository.save(album), "Любителям металла посвящается!", 2L);
     }
 
-    private void updateMetalBlock(AlbumEntity album) {
-        BlockEntity block = blockRepository.findById(2L).orElse(null);
+    public void updateElectronicPlaylist() {
+        PrimaryAlbumEntity solai = primaryAlbumRepository.findByTitle("Solai");
+        PrimaryAlbumEntity afterDark = primaryAlbumRepository.findByTitle("After Dark");
+        if(Objects.isNull(solai) || Objects.isNull(afterDark))
+            return;
 
+        updateBlock(fromPrimary(solai), "Вперёд в будущее!", 3L);
+        updateBlock(fromPrimary(afterDark), "Вперёд в будущее!", 3L);
+    }
+
+    private AlbumEntity fromPrimary(PrimaryAlbumEntity primaryAlbum) {
+        AlbumEntity album = albumRepository.findByTitle(primaryAlbum.getTitle());
+
+        if(Objects.isNull(album)) {
+            album = new AlbumEntity();
+            album.setTitle(primaryAlbum.getTitle());
+            album.setAuthors(primaryAlbum.getAuthors());
+            album.setDescription(primaryAlbum.getAuthors().stream().map(AuthorEntity::getName).collect(Collectors.joining(", ")));
+            album.setImage(primaryAlbum.getImage());
+
+            Date now = new Date();
+
+            album.setCreated(now);
+            album.setUpdated(now);
+
+            album.setAlbumTypeEntity(primaryAlbum.getAlbumTypeEntity());
+
+            album.setTracks(primaryAlbum.getTracks());
+        }
+        return album;
+    }
+
+    private void updateBlock(AlbumEntity album, String title, long id) {
+        BlockEntity block = blockRepository.findById(id).orElse(null);
         List<AlbumEntity> albums;
 
         if(Objects.isNull(block)) {
             block = new BlockEntity();
-            block.setId(2L);
-            block.setTitle("Любителям металла посвящается!");
+            block.setId(id);
+            block.setTitle(title);
             albums = Collections.singletonList(album);
         } else {
             albums = getAlbumEntities(album, block);
