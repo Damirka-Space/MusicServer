@@ -211,6 +211,8 @@ public class PlaylistService {
     private AlbumEntity fromPrimary(PrimaryAlbumEntity primaryAlbum) {
         AlbumEntity album = albumRepository.findByTitle(primaryAlbum.getTitle());
 
+        Date now = new Date();
+
         if(Objects.isNull(album)) {
             album = new AlbumEntity();
             album.setTitle(primaryAlbum.getTitle());
@@ -218,17 +220,15 @@ public class PlaylistService {
             album.setDescription(primaryAlbum.getAuthors().stream().map(AuthorEntity::getName).collect(Collectors.joining(", ")));
             album.setImage(primaryAlbum.getImage());
 
-            Date now = new Date();
-
             album.setCreated(now);
-            album.setUpdated(now);
 
             album.setAlbumTypeEntity(primaryAlbum.getAlbumTypeEntity());
-
-            album.setTracks(primaryAlbum.getTracks());
-
-            albumRepository.save(album);
         }
+
+        album.setUpdated(now);
+        album.setTracks(primaryAlbum.getTracks());
+        albumRepository.save(album);
+
         return album;
     }
 
