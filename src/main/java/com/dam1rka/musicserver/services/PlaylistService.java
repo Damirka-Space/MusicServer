@@ -176,9 +176,11 @@ public class PlaylistService {
         try {
             PrimaryAlbumEntity seizeThePower = primaryAlbumRepository.findByTitle("Seize the Power");
             PrimaryAlbumEntity sexMetal = primaryAlbumRepository.findByTitle("SEXMETAL");
+            PrimaryAlbumEntity butterfly = primaryAlbumRepository.findByTitle("Скафандр и бабочка");
 
             updateBlock(fromPrimary(seizeThePower), "Любителям метала посвящается!", 2L);
             updateBlock(fromPrimary(sexMetal), "Любителям метала посвящается!", 2L);
+            updateBlock(fromPrimary(butterfly), "Любителям метала посвящается!", 2L);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
