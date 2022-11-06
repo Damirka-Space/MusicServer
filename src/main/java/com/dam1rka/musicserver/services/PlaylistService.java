@@ -171,13 +171,27 @@ public class PlaylistService {
 
         AlbumEntity album = updateAlbum(4L, "Метал", "альтернатива", "metall_test", metalTracks);
 
-        updateBlock(albumRepository.save(album), "Любителям металла посвящается!", 2L);
+        updateBlock(albumRepository.save(album), "Любителям метала посвящается!", 2L);
+
+        try {
+            PrimaryAlbumEntity seizeThePower = primaryAlbumRepository.findByTitle("Seize the Power");
+            PrimaryAlbumEntity sexMetal = primaryAlbumRepository.findByTitle("SEXMETAL");
+
+            updateBlock(fromPrimary(seizeThePower), "Любителям метала посвящается!", 2L);
+            updateBlock(fromPrimary(sexMetal), "Любителям метала посвящается!", 2L);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void updateElectronicPlaylist() {
         PrimaryAlbumEntity solai = primaryAlbumRepository.findByTitle("Solai");
         PrimaryAlbumEntity afterDark = primaryAlbumRepository.findByTitle("After Dark");
-        if(Objects.isNull(solai) || Objects.isNull(afterDark))
+        PrimaryAlbumEntity signals = primaryAlbumRepository.findByTitle("Signals");
+        PrimaryAlbumEntity lonelyChildAndEndlessSpace = primaryAlbumRepository.findByTitle("Lonely Child and Endless Space");
+        PrimaryAlbumEntity castleInTheSky = primaryAlbumRepository.findByTitle("Castle in the Sky");
+
+        if(Objects.isNull(signals) || Objects.isNull(castleInTheSky))
         {
             System.out.println("Not found albums");
             System.out.println(solai);
@@ -187,6 +201,9 @@ public class PlaylistService {
 
         updateBlock(fromPrimary(solai), "Вперёд в будущее!", 5L);
         updateBlock(fromPrimary(afterDark), "Вперёд в будущее!", 5L);
+        updateBlock(fromPrimary(signals), "Вперёд в будущее!", 5L);
+        updateBlock(fromPrimary(lonelyChildAndEndlessSpace), "Вперёд в будущее!", 5L);
+        updateBlock(fromPrimary(castleInTheSky), "Вперёд в будущее!", 5L);
     }
 
     private AlbumEntity fromPrimary(PrimaryAlbumEntity primaryAlbum) {
