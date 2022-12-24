@@ -4,11 +4,18 @@ import com.dam1rka.musicserver.security.oauth2.CustomOAuth2UserService;
 import com.dam1rka.musicserver.security.oauth2.CustomOidcUserService;
 import com.dam1rka.musicserver.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+
+import java.util.Arrays;
 
 @EnableWebSecurity
 public class SecurityConfig {
@@ -16,6 +23,9 @@ public class SecurityConfig {
     private final CustomOAuth2UserService oAuth2UserService;
     private final CustomOidcUserService oidcUserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+
+    @Value("${website}")
+    private String addr;
 
     @Autowired
     SecurityConfig(CustomOAuth2UserService oAuth2UserService, CustomOidcUserService oidcUserService, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) {
@@ -26,6 +36,9 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf().disable();
+        http.cors(Customizer.withDefaults());
+
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
@@ -37,9 +50,17 @@ public class SecurityConfig {
 //                    .userInfoEndpoint().userService(oAuth2UserService)
 //                    .oidcUserService(oidcUserService)
 //                .and().successHandler(oAuth2AuthenticationSuccessHandler);
-        http.csrf().disable();
-        http.cors().disable();
         return http.build();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList(addr));
+        configuration.setAllowedMethods(Arrays.asList("GET","PUT","POST"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
