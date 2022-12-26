@@ -13,5 +13,6 @@ public class TrackDto {
     private List<String> author;
     private Long albumId;
     private String album;
+    private String url;
 
 }

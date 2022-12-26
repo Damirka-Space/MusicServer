@@ -7,6 +7,7 @@ import com.dam1rka.musicserver.entities.*;
 import com.dam1rka.musicserver.repositories.*;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,9 @@ public class AlbumService {
     private AlbumTypeRepository albumTypeRepository;
     private ImageService imageService;
     private FileService fileService;
+
+    @Value("${file-server}")
+    private String fileServer;
 
     @Autowired
     public AlbumService(PrimaryAlbumRepository primaryAlbumRepository, AlbumRepository albumRepository, TrackRepository trackRepository,
@@ -67,6 +71,7 @@ public class AlbumService {
 
             t.setId(track.getId());
             t.setTitle(track.getTitle());
+            t.setUrl(fileServer + "tracks/" + t.getId());
 
             List<AuthorEntity> authors = track.getAuthors();
 
@@ -87,6 +92,7 @@ public class AlbumService {
                 t.setAlbumId(primaryAlbum.getId());
                 t.setAlbum(primaryAlbum.getTitle());
             }
+
             tracks.add(t);
         }
         return tracks;

@@ -10,7 +10,7 @@ public class AlbumDto {
     private String description;
     private ImageDto image;
 
-    public static AlbumDto fromAlbumEntity(AlbumEntity album) {
+    public static AlbumDto fromAlbumEntity(AlbumEntity album, String baseUrl) {
         AlbumDto albumDto = new AlbumDto();
         albumDto.setId(album.getId());
         albumDto.setTitle(album.getTitle());
@@ -18,6 +18,7 @@ public class AlbumDto {
 
         ImageDto imageDto = new ImageDto();
         imageDto.setId(album.getImage().getId());
+        imageDto.setUrl(baseUrl + "images/" + imageDto.getId());
 
         albumDto.setImage(imageDto);
 

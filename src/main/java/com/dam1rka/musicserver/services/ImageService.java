@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.Objects;
 
@@ -71,14 +72,14 @@ public class ImageService {
     }
 
 
-    // Returns image of 1000x1000
+    // Returns image of 1024x1024
     public byte[] getImage(Long id) {
         ImageEnitiy img = image(id);
 
         return fileService.loadImage(img.getUrl());
     }
 
-    // Returns image of 100x100
+    // Returns image of 128x128
     public byte[] getSmailImage(Long id) {
         ImageEnitiy img = image(id);
 
@@ -93,7 +94,7 @@ public class ImageService {
         return smallImage;
     }
 
-    // Returns image of 200x200
+    // Returns image of 256x256
     public byte[] getMediumImage(Long id) {
         ImageEnitiy img = image(id);
 

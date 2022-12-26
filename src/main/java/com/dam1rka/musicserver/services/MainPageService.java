@@ -7,6 +7,7 @@ import com.dam1rka.musicserver.entities.AlbumEntity;
 import com.dam1rka.musicserver.entities.BlockEntity;
 import com.dam1rka.musicserver.repositories.BlockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -14,6 +15,9 @@ import java.util.List;
 
 @Service
 public class MainPageService {
+
+    @Value("${file-server}")
+    private String fileServer;
 
     @Autowired
     private BlockRepository blockRepository;
@@ -32,7 +36,7 @@ public class MainPageService {
             List<AlbumDto> albumDtos = new LinkedList<>();
 
             for(AlbumEntity album : block.getAlbums())
-                albumDtos.add(AlbumDto.fromAlbumEntity(album));
+                albumDtos.add(AlbumDto.fromAlbumEntity(album, fileServer));
 
             blockDto.setAlbums(albumDtos);
             blocks.add(blockDto);

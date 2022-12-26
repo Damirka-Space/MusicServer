@@ -36,5 +36,7 @@ public class StartUpService {
         }
 
         playlistService.updateAll();
+
+
     }
 }
