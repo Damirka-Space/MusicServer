@@ -18,7 +18,7 @@ public class AlbumDto {
 
         ImageDto imageDto = new ImageDto();
         imageDto.setId(album.getImage().getId());
-        imageDto.setUrl(baseUrl + "images/" + imageDto.getId());
+        imageDto.setUrl(baseUrl + "mediumImages/" + imageDto.getId());
 
         albumDto.setImage(imageDto);
 

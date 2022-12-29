@@ -1,8 +1,10 @@
 package com.dam1rka.musicserver.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.lang.NonNull;
@@ -29,6 +31,10 @@ public class AlbumEntity {
 
     @OneToOne(fetch = FetchType.EAGER)
     private ImageEnitiy image;
+
+    @JsonInclude
+    @Transient
+    private String imageUrl;
 
     @ManyToMany(fetch = FetchType.LAZY)
     private List<AuthorEntity> authors;

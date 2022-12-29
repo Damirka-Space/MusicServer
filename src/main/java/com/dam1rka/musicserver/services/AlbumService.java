@@ -45,9 +45,11 @@ public class AlbumService {
 
     public AlbumEntity getAlbum(Long id) throws RuntimeException {
         AlbumEntity album = albumRepository.findById(id).orElse(null);
+
         if(Objects.isNull(album))
             throw new RuntimeException("Album not found");
 
+        album.setImageUrl(fileServer + "images/" + album.getImage().getId());
         album.getTracks().sort(Comparator.comparing(TrackEntity::getId).reversed());
 
         return album;
@@ -91,6 +93,10 @@ public class AlbumService {
             if(Objects.nonNull(primaryAlbum)) {
                 t.setAlbumId(primaryAlbum.getId());
                 t.setAlbum(primaryAlbum.getTitle());
+
+                long imageId = primaryAlbum.getImage().getId();
+                t.setImageUrl(fileServer + "smallImages/" + imageId);
+                t.setMetadataImageUrl(fileServer + "Images/" + imageId);
             }
 
             tracks.add(t);

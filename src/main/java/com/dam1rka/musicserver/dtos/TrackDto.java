@@ -14,5 +14,7 @@ public class TrackDto {
     private Long albumId;
     private String album;
     private String url;
+    private String imageUrl;
+    private String metadataImageUrl;
 
 }
