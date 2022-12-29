@@ -47,7 +47,7 @@ public class FileUploaderService {
         this.fileService = fileService;
     }
 
-    private enum FileType {
+    public enum FileType {
         Track,
         Image,
         MediumImage,

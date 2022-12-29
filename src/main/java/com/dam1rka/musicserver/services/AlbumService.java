@@ -26,13 +26,15 @@ public class AlbumService {
     private ImageService imageService;
     private FileService fileService;
 
+    private FileUploaderService fileUploaderService;
+
     @Value("${file-server}")
     private String fileServer;
 
     @Autowired
     public AlbumService(PrimaryAlbumRepository primaryAlbumRepository, AlbumRepository albumRepository, TrackRepository trackRepository,
                         AuthorRepository authorRepository, GenreRepository genreRepository, ImageService imageService, FileService fileService,
-                        AlbumTypeRepository albumTypeRepository) {
+                        AlbumTypeRepository albumTypeRepository, FileUploaderService fileUploaderService) {
         this.primaryAlbumRepository = primaryAlbumRepository;
         this.albumRepository = albumRepository;
         this.trackRepository = trackRepository;
@@ -41,6 +43,7 @@ public class AlbumService {
         this.albumTypeRepository = albumTypeRepository;
         this.imageService = imageService;
         this.fileService = fileService;
+        this.fileUploaderService = fileUploaderService;
     }
 
     public AlbumEntity getAlbum(Long id) throws RuntimeException {
@@ -236,9 +239,35 @@ public class AlbumService {
         // create image
         {
             byte[] f = gson.fromJson(albumUploadDto.getImage(), byte[].class);
-            MultipartFile image = new MockMultipartFile(album.getTitle(),
+            MultipartFile bigImageFile = new MockMultipartFile(album.getTitle(),
                     album.getTitle() + "-" + album.getId() + ".jpg", "image/jpeg", f);
-            album.setImage(imageService.saveImage(image, album.getTitle() + "-" + album.getId()));
+            album.setImage(imageService.saveImage(bigImageFile, album.getTitle() + "-" + album.getId()));
+
+            // Send big image
+
+            fileUploaderService.upload(bigImageFile, FileUploaderService.FileType.Image);
+
+            // Send medium
+
+            ImageEnitiy e = album.getImage();
+
+            byte[] mediumImg = imageService.getMediumImage(album.getImage().getId());
+
+            MockMultipartFile mediumImageFile = new MockMultipartFile(e.getUrl(),
+                    e.getUrl() + ".jpg", "image/jpeg", mediumImg);
+
+            fileUploaderService.upload(mediumImageFile, FileUploaderService.FileType.MediumImage);
+
+
+            // Send small
+
+            byte[] smallImg = imageService.getSmailImage(e.getId());
+
+            MockMultipartFile smallImageFile = new MockMultipartFile(e.getUrl(),
+                    e.getUrl() + ".jpg", "image/jpeg", smallImg);
+
+            fileUploaderService.upload(smallImageFile, FileUploaderService.FileType.SmallImage);
+
         }
 
         // save all tracks
@@ -250,6 +279,8 @@ public class AlbumService {
             MultipartFile trackFile = new MockMultipartFile(t.getTitle(),
                     t.getTitle() + ".mp3", "audio/mpeg", tracks[i].getTrack());
             fileService.saveTrack(t.getId(), trackFile);
+
+            fileUploaderService.upload(trackFile, FileUploaderService.FileType.Track);
         }
 
         // Add track to album
