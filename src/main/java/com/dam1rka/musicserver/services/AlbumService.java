@@ -96,7 +96,7 @@ public class AlbumService {
 
                 long imageId = primaryAlbum.getImage().getId();
                 t.setImageUrl(fileServer + "smallImages/" + imageId);
-                t.setMetadataImageUrl(fileServer + "Images/" + imageId);
+                t.setMetadataImageUrl(fileServer + "images/" + imageId);
             }
 
             tracks.add(t);
