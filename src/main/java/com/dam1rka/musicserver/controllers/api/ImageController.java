@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/api/image")
+@RequestMapping("/image")
 public class ImageController {
 
     private ImageService imageService;

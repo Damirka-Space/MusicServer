@@ -2,20 +2,16 @@ package com.dam1rka.musicserver.controllers.api;
 
 import com.dam1rka.musicserver.dtos.AlbumUploadDto;
 import com.dam1rka.musicserver.services.AlbumService;
-import com.nimbusds.oauth2.sdk.Response;
-import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.function.ServerRequest;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/api/album")
+@RequestMapping("/album")
 public class AlbumController {
 
     private AlbumService albumService;
