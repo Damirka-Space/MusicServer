@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AlbumService {
@@ -92,12 +93,12 @@ public class AlbumService {
                 t.setAuthor(ath);
             }
 
-            PrimaryAlbumEntity primaryAlbum = track.getAlbum();
-            if(Objects.nonNull(primaryAlbum)) {
-                t.setAlbumId(primaryAlbum.getId());
-                t.setAlbum(primaryAlbum.getTitle());
+            AlbumEntity albumEntity = track.getAlbum();
+            if(Objects.nonNull(albumEntity)) {
+                t.setAlbumId(albumEntity.getId());
+                t.setAlbum(albumEntity.getTitle());
 
-                long imageId = primaryAlbum.getImage().getId();
+                long imageId = albumEntity.getImage().getId();
                 t.setImageUrl(fileServer + "smallImages/" + imageId);
                 t.setMetadataImageUrl(fileServer + "images/" + imageId);
             }
@@ -200,41 +201,35 @@ public class AlbumService {
 
         // create album
 
-        PrimaryAlbumEntity album = primaryAlbumRepository.findByTitle(albumUploadDto.getTitle());
+        // create author for album
+        List<AuthorEntity> authors = new LinkedList<>();
+
+        String[] a_str = albumUploadDto.getAuthor().split(", ");
+
+        for(String a : a_str) {
+            AuthorEntity author = authorRepository.findByName(a);
+            if(Objects.isNull(author)){
+                author = new AuthorEntity();
+                author.setName(a);
+                author.setCreated(now);
+                author.setUpdated(now);
+                author = authorRepository.save(author);
+            }
+            authors.add(author);
+        }
+        AlbumEntity album = albumRepository.findByTitleAndAuthorsIn(albumUploadDto.getTitle(), authors);
 
         if(Objects.isNull(album)) {
-            album = new PrimaryAlbumEntity();
+            album = new AlbumEntity();
             album.setTitle(albumUploadDto.getTitle());
             album.setCreated(now);
-
-            // create author for album
-            {
-                List<AuthorEntity> authors = album.getAuthors();
-
-                if(Objects.isNull(authors)) {
-                    authors = new LinkedList<>();
-                    String[] a_str = albumUploadDto.getAuthor().split(", ");
-
-                    for(String a : a_str) {
-                        AuthorEntity author = authorRepository.findByName(a);
-                        if(Objects.isNull(author)){
-                            author = new AuthorEntity();
-                            author.setName(a);
-                            author.setCreated(now);
-                            author.setUpdated(now);
-                            author = authorRepository.save(author);
-                        }
-                        authors.add(author);
-                    }
-
-                    album.setAuthors(authors);
-                }
-            }
+            album.setAuthors(authors);
+            album.setDescription(authors.stream().map(AuthorEntity::getName).collect(Collectors.joining(", ")));
         }
 
         album.setUpdated(now);
 
-        album = primaryAlbumRepository.save(album);
+        album = albumRepository.save(album);
 
         // create image
         {
@@ -292,7 +287,7 @@ public class AlbumService {
 
             album.setTracks(trackEntities);
 
-            primaryAlbumRepository.save(album);
+            albumRepository.save(album);
         }
     }
 }

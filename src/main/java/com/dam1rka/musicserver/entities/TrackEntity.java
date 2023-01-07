@@ -25,7 +25,7 @@ public class TrackEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonBackReference
-    private PrimaryAlbumEntity album;
+    private AlbumEntity album;
 
     @ManyToMany(fetch = FetchType.LAZY)
     private List<AuthorEntity> authors;

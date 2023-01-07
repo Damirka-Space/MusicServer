@@ -127,14 +127,6 @@ public class PlaylistService {
         updatePlaylistOfDay();
         updatePlaylistOfWeek();
         updateAllInOnePlaylist();
-
-        updateMetalPlaylist();
-
-        try {
-            updateElectronicPlaylist();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
     }
 
     public void updatePlaylistOfDay() {
@@ -162,54 +154,24 @@ public class PlaylistService {
         updateWelcomeBlock(albumRepository.save(album));
     }
 
-    public void updateMetalPlaylist() {
-        List<String> genres = new LinkedList<>() {{
-            add("Альтернатива");
-            add("Альтернативный метал");
-        } };
-        List<TrackEntity> metalTracks = trackRepository.findAllByGenres(genres);
+    public void convertAlbums() {
+        List<PrimaryAlbumEntity> primaryAlbumEntities = primaryAlbumRepository.findAll();
 
-        AlbumEntity album = updateAlbum(4L, "Метал", "альтернатива", "metall_test", metalTracks);
+        for (PrimaryAlbumEntity primaryAlbum : primaryAlbumEntities) {
+            AlbumEntity newAlbum = fromPrimary(primaryAlbum);
 
-        updateBlock(albumRepository.save(album), "Любителям метала посвящается!", 2L);
+            List<TrackEntity> trackEntities = newAlbum.getTracks();
 
-        try {
-            PrimaryAlbumEntity seizeThePower = primaryAlbumRepository.findByTitle("Seize the Power");
-            PrimaryAlbumEntity sexMetal = primaryAlbumRepository.findByTitle("SEXMETAL");
-            PrimaryAlbumEntity butterfly = primaryAlbumRepository.findByTitle("Скафандр и бабочка");
+            for(TrackEntity track : trackEntities)
+                track.setAlbum(newAlbum);
 
-            updateBlock(fromPrimary(seizeThePower), "Любителям метала посвящается!", 2L);
-            updateBlock(fromPrimary(sexMetal), "Любителям метала посвящается!", 2L);
-            updateBlock(fromPrimary(butterfly), "Любителям метала посвящается!", 2L);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public void updateElectronicPlaylist() {
-        PrimaryAlbumEntity solai = primaryAlbumRepository.findByTitle("Solai");
-        PrimaryAlbumEntity afterDark = primaryAlbumRepository.findByTitle("After Dark");
-        PrimaryAlbumEntity signals = primaryAlbumRepository.findByTitle("Signals");
-        PrimaryAlbumEntity lonelyChildAndEndlessSpace = primaryAlbumRepository.findByTitle("Lonely Child and Endless Space");
-        PrimaryAlbumEntity castleInTheSky = primaryAlbumRepository.findByTitle("Castle in the Sky");
-
-        if(Objects.isNull(signals) || Objects.isNull(castleInTheSky))
-        {
-            System.out.println("Not found albums");
-            System.out.println(solai);
-            System.out.println(afterDark);
-            return;
+            trackRepository.saveAll(trackEntities);
         }
 
-        updateBlock(fromPrimary(solai), "Вперёд в будущее!", 5L);
-        updateBlock(fromPrimary(afterDark), "Вперёд в будущее!", 5L);
-        updateBlock(fromPrimary(signals), "Вперёд в будущее!", 5L);
-        updateBlock(fromPrimary(lonelyChildAndEndlessSpace), "Вперёд в будущее!", 5L);
-        updateBlock(fromPrimary(castleInTheSky), "Вперёд в будущее!", 5L);
     }
 
     private AlbumEntity fromPrimary(PrimaryAlbumEntity primaryAlbum) {
-        AlbumEntity album = albumRepository.findByTitle(primaryAlbum.getTitle());
+        AlbumEntity album = albumRepository.findByTitleAndAuthorsIn(primaryAlbum.getTitle(), primaryAlbum.getAuthors());
 
         Date now = new Date();
 
@@ -220,7 +182,7 @@ public class PlaylistService {
             album.setDescription(primaryAlbum.getAuthors().stream().map(AuthorEntity::getName).collect(Collectors.joining(", ")));
             album.setImage(primaryAlbum.getImage());
 
-            album.setCreated(now);
+            album.setCreated(primaryAlbum.getCreated());
 
             album.setAlbumTypeEntity(primaryAlbum.getAlbumTypeEntity());
         }
