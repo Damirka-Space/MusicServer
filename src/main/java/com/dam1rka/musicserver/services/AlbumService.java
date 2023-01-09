@@ -152,84 +152,43 @@ public class AlbumService {
         }
 
         Gson gson = new Gson();
-        TrackUploadNewDto[] tracks = gson.fromJson(albumUploadDto.getTracks(), TrackUploadNewDto[].class);
-
-        for(var track : tracks) {
-            String title = track.getTitle();
-
-            TrackEntity trackEntity = trackRepository.findByTitle(title);
-
-            if(Objects.nonNull(trackEntity)) {
-                System.out.println("Track already exist! Track - " + title);
-                continue;
-            }
-
-            trackEntity = new TrackEntity();
-            trackEntity.setTitle(title);
-
-            trackEntity.setCreated(now);
-            trackEntity.setUpdated(now);
-
-            // create author for track
-            {
-                List<AuthorEntity> authors = new LinkedList<>();
-
-                String[] a_str = track.getAuthor().split(", ");
-
-                for(String a : a_str) {
-                    AuthorEntity author = authorRepository.findByName(a);
-                    if(Objects.isNull(author)){
-                        author = new AuthorEntity();
-                        author.setName(a);
-                        author.setCreated(now);
-                        author.setUpdated(now);
-                        author = authorRepository.save(author);
-                    }
-                    authors.add(author);
-                }
-
-                trackEntity.setAuthors(authors);
-            }
-
-            // load genres for track
-            {
-                trackEntity.setGenres(genres);
-            }
-
-            trackEntities.add(trackEntity);
-        }
 
         // create album
 
-        // create author for album
-        List<AuthorEntity> authors = new LinkedList<>();
+        AlbumEntity album;
 
-        String[] a_str = albumUploadDto.getAuthor().split(", ");
+        {
+            // create author for album
+            List<AuthorEntity> authors = new LinkedList<>();
 
-        for(String a : a_str) {
-            AuthorEntity author = authorRepository.findByName(a);
-            if(Objects.isNull(author)){
-                author = new AuthorEntity();
-                author.setName(a);
-                author.setCreated(now);
-                author.setUpdated(now);
-                author = authorRepository.save(author);
+            String[] a_str = albumUploadDto.getAuthor().split(", ");
+
+            for(String a : a_str) {
+                AuthorEntity author = authorRepository.findByName(a);
+                if(Objects.isNull(author)){
+                    author = new AuthorEntity();
+                    author.setName(a);
+                    author.setCreated(now);
+                    author.setUpdated(now);
+                    author = authorRepository.save(author);
+                }
+                authors.add(author);
             }
-            authors.add(author);
+
+            album = albumRepository.findByTitleAndAuthorsIn(albumUploadDto.getTitle(), authors);
+
+            if(Objects.isNull(album)) {
+                album = new AlbumEntity();
+                album.setTitle(albumUploadDto.getTitle());
+                album.setCreated(now);
+                album.setAuthors(authors);
+                album.setDescription(authors.stream().map(AuthorEntity::getName).collect(Collectors.joining(", ")));
+            }
+
+            album.setUpdated(now);
+
+            album = albumRepository.save(album);
         }
-        AlbumEntity album = albumRepository.findByTitleAndAuthorsIn(albumUploadDto.getTitle(), authors);
-
-        if(Objects.isNull(album)) {
-            album = new AlbumEntity();
-            album.setTitle(albumUploadDto.getTitle());
-            album.setCreated(now);
-            album.setAuthors(authors);
-            album.setDescription(authors.stream().map(AuthorEntity::getName).collect(Collectors.joining(", ")));
-        }
-
-        album.setUpdated(now);
-
-        album = albumRepository.save(album);
 
         // create image
         {
@@ -263,6 +222,46 @@ public class AlbumService {
 
             fileUploaderService.upload(smallImageFile, FileUploaderService.FileType.SmallImage);
 
+        }
+
+        TrackUploadNewDto[] tracks = gson.fromJson(albumUploadDto.getTracks(), TrackUploadNewDto[].class);
+
+        for(var track : tracks) {
+            String title = track.getTitle();
+
+            // create author for track
+            List<AuthorEntity> authors = new LinkedList<>();
+
+            String[] a_str = track.getAuthor().split(", ");
+
+            for(String a : a_str) {
+                AuthorEntity author = authorRepository.findByName(a);
+                if(Objects.isNull(author)){
+                    author = new AuthorEntity();
+                    author.setName(a);
+                    author.setCreated(now);
+                    author.setUpdated(now);
+                    author = authorRepository.save(author);
+                }
+                authors.add(author);
+            }
+
+            TrackEntity trackEntity = trackRepository.findByTitleAndAlbumAndAuthorsIn(title, album, authors);
+
+            if(Objects.isNull(trackEntity)) {
+                trackEntity = new TrackEntity();
+                trackEntity.setTitle(title);
+                trackEntity.setAuthors(authors);
+
+                trackEntity.setCreated(now);
+            }
+
+            trackEntity.setUpdated(now);
+
+            // load genres for track
+            trackEntity.setGenres(genres);
+
+            trackEntities.add(trackEntity);
         }
 
         // save all tracks
