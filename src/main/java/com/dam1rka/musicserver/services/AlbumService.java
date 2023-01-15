@@ -54,7 +54,9 @@ public class AlbumService {
             throw new RuntimeException("Album not found");
 
         album.setImageUrl(fileServer + "images/" + album.getImage().getId());
-        album.getTracks().sort(Comparator.comparing(TrackEntity::getId).reversed());
+
+        if(id == 1L) // Playlist - Всё в одном
+            album.getTracks().sort(Comparator.comparing(TrackEntity::getId).reversed());
 
         return album;
     }
