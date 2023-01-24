@@ -6,6 +6,8 @@ import com.dam1rka.musicserver.entities.ImageEnitiy;
 import com.dam1rka.musicserver.entities.TrackEntity;
 import com.dam1rka.musicserver.repositories.ImageRepository;
 import com.dam1rka.musicserver.repositories.TrackRepository;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
@@ -16,7 +18,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +40,7 @@ public class FileUploaderService {
 
     private final FileService fileService;
 
+    @Autowired
     public FileUploaderService(WebClient webClient, TrackRepository trackRepository, ImageRepository imageRepository, ImageService imageService, FileService fileService) {
         this.webClient = webClient;
         this.trackRepository = trackRepository;

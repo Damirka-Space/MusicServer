@@ -2,14 +2,14 @@ package com.dam1rka.musicserver.security.oauth2;
 
 import com.dam1rka.musicserver.dtos.UserRegistrationDto;
 import com.dam1rka.musicserver.services.UserService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Random;
@@ -31,7 +31,6 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
         UserRegistrationDto newUser = new UserRegistrationDto();
 
         if(authentication.getPrincipal() instanceof DefaultOAuth2User oauthUser) {
-
             if(Objects.nonNull(userService.getUserByUsername(oauthUser.getName()))) {
                 super.onAuthenticationSuccess(request, response, authentication);
                 return;

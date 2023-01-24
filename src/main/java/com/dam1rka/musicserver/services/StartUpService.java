@@ -3,10 +3,10 @@ package com.dam1rka.musicserver.services;
 import com.dam1rka.musicserver.entities.AlbumTypeEntity;
 import com.dam1rka.musicserver.entities.AlbumTypeEnum;
 import com.dam1rka.musicserver.repositories.AlbumTypeRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.Objects;
 
 @Service
