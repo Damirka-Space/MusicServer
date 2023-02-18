@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Entity
 @Data
-public class ImageEnitiy {
+public class ImageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class ImageEnitiy {
     @LastModifiedDate
     private Date updated;
 
-    public ImageEnitiy() {
+    public ImageEntity() {
 
     }
 }

@@ -30,7 +30,7 @@ public class AlbumEntity {
     private AlbumTypeEntity albumTypeEntity;
 
     @OneToOne(fetch = FetchType.EAGER)
-    private ImageEnitiy image;
+    private ImageEntity image;
 
     @JsonInclude
     @Transient

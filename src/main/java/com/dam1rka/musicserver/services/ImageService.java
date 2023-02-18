@@ -1,6 +1,6 @@
 package com.dam1rka.musicserver.services;
 
-import com.dam1rka.musicserver.entities.ImageEnitiy;
+import com.dam1rka.musicserver.entities.ImageEntity;
 import com.dam1rka.musicserver.repositories.ImageRepository;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +62,8 @@ public class ImageService {
         }
     }
 
-    private ImageEnitiy image(Long id) {
-        ImageEnitiy img = imageRepository.findById(id).orElse(null);
+    private ImageEntity image(Long id) {
+        ImageEntity img = imageRepository.findById(id).orElse(null);
 
         if(Objects.isNull(img))
             throw new RuntimeException("Image not found");
@@ -74,14 +74,14 @@ public class ImageService {
 
     // Returns image of 1024x1024
     public byte[] getImage(Long id) {
-        ImageEnitiy img = image(id);
+        ImageEntity img = image(id);
 
         return fileService.loadImage(img.getUrl());
     }
 
     // Returns image of 128x128
     public byte[] getSmailImage(Long id) {
-        ImageEnitiy img = image(id);
+        ImageEntity img = image(id);
 
         byte[] smallImage;
 
@@ -96,7 +96,7 @@ public class ImageService {
 
     // Returns image of 256x256
     public byte[] getMediumImage(Long id) {
-        ImageEnitiy img = image(id);
+        ImageEntity img = image(id);
 
         byte[] mediumImage;
 
@@ -109,12 +109,16 @@ public class ImageService {
         return mediumImage;
     }
 
-    public ImageEnitiy saveImage(MultipartFile image, String album) {
+    public ImageEntity saveImage(long id, MultipartFile image, String album) {
         Date now = new Date();
-        ImageEnitiy imageEnitiy = imageRepository.findByUrl(album);
+        ImageEntity imageEnitiy = imageRepository.findByUrl(album);
 
         if(Objects.isNull(imageEnitiy)) {
-            imageEnitiy = new ImageEnitiy();
+            imageEnitiy = new ImageEntity();
+
+            if(id != -1)
+                imageEnitiy.setId(id);
+
             imageEnitiy.setUrl(album);
             imageEnitiy.setCreated(now);
             imageEnitiy.setUpdated(now);

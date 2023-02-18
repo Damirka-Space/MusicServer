@@ -1,9 +1,9 @@
 package com.dam1rka.musicserver.repositories;
 
-import com.dam1rka.musicserver.entities.ImageEnitiy;
+import com.dam1rka.musicserver.entities.ImageEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ImageRepository extends JpaRepository<ImageEnitiy, Long> {
+public interface ImageRepository extends JpaRepository<ImageEntity, Long> {
 
-    ImageEnitiy findByUrl(String url);
+    ImageEntity findByUrl(String url);
 }

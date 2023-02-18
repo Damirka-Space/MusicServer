@@ -48,10 +48,10 @@ public class PlaylistService {
             album.setCreated(now);
             album.setUpdated(now);
 
-            ImageEnitiy image = imageRepository.findByUrl(imageUrl);
+            ImageEntity image = imageRepository.findByUrl(imageUrl);
 
             if(Objects.isNull(image)) {
-                image = new ImageEnitiy();
+                image = new ImageEntity();
                 image.setUrl(imageUrl);
 
                 imageRepository.save(image);

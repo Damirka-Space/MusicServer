@@ -2,10 +2,12 @@ package com.dam1rka.musicserver.services;
 
 import com.dam1rka.musicserver.dtos.FileDto;
 import com.dam1rka.musicserver.dtos.FileUploadDto;
-import com.dam1rka.musicserver.entities.ImageEnitiy;
+import com.dam1rka.musicserver.dtos.FsResponeDto;
+import com.dam1rka.musicserver.entities.ImageEntity;
 import com.dam1rka.musicserver.entities.TrackEntity;
 import com.dam1rka.musicserver.repositories.ImageRepository;
 import com.dam1rka.musicserver.repositories.TrackRepository;
+import com.google.gson.Gson;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
@@ -57,17 +58,19 @@ public class FileUploaderService {
         File
     }
 
-    private void send(String root, String path, FileUploadDto uploadDto, FileDto file) {
+    private long send(String root, String path, FileUploadDto uploadDto, FileDto file) {
 
         try {
             // First send post request for entity creation
             Optional<String> res = webClient.post().uri(root)
                     .body(BodyInserters.fromValue(uploadDto))
-                    .exchangeToMono(clientResponse -> Mono.just(clientResponse.headers().header("location").get(0))).blockOptional();
+                    .exchangeToMono(clientResponse -> clientResponse.bodyToMono(String.class)).blockOptional();
 
             // After entity creation sending content to them
             if(res.isPresent()) {
-                String content = path + res.get().substring(res.get().lastIndexOf('/'));
+                Gson gson = new Gson();
+                FsResponeDto fsResponeDto = gson.fromJson(res.get(), FsResponeDto.class);
+                String content = fsResponeDto.get_links().getAsJsonObject("self").get("href").getAsString();
 
                 MultipartBodyBuilder b = new MultipartBodyBuilder();
                 b.part("file", file.getFile().getResource());
@@ -76,9 +79,10 @@ public class FileUploaderService {
                         .uri(content)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .body(BodyInserters.fromValue(b.build()))
-                        .retrieve()
-                        .bodyToMono(String.class).blockOptional();
+                        .exchangeToMono(clientResponse -> clientResponse.bodyToMono(String.class)).blockOptional();
 
+                long id = Long.parseLong(content.substring(content.lastIndexOf('/') + 1));
+                return id;
             }
             else {
                 throw new RuntimeException("Can't send file: " + file.getFile().getOriginalFilename());
@@ -87,58 +91,54 @@ public class FileUploaderService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        return -1;
     }
 
-    public void upload(MultipartFile file, FileType type) {
+    public long upload(MultipartFile file, FileType type) {
         FileUploadDto uploadDto = new FileUploadDto();
         FileDto f = new FileDto();
         f.setFile(file);
         uploadDto.setName(file.getOriginalFilename());
 
+        String root;
+        String path;
 
         switch (type) {
             case Track -> {
                 uploadDto.setContentMimeType("audio/mpeg");
 
-                String path = fileServer + "tracks/";
-
-                send(path, path , uploadDto, f);
+                path = fileServer + "tracks/";
+                root = path;
             }
             case Image -> {
                 uploadDto.setContentMimeType("image/jpeg");
 
-                String path = fileServer + "images/";
-
-                send(path, path, uploadDto, f);
+                path = fileServer + "images/";
+                root = path;
             }
             case MediumImage -> {
                 uploadDto.setContentMimeType("image/jpeg");
 
-                String root = fileServer + "medium_images/";
-                String path = fileServer + "mediumImages/";
-
-                send(root, path, uploadDto, f);
+                root = fileServer + "medium_images/";
+                path = fileServer + "mediumImages/";
             }
             case SmallImage -> {
                 uploadDto.setContentMimeType("image/jpeg");
 
-                String root = fileServer + "small_images/";
-                String path = fileServer + "smallImages/";
-
-                send(root, path, uploadDto, f);
+                root = fileServer + "small_images/";
+                path = fileServer + "smallImages/";
             }
             case File -> {
                 uploadDto.setContentMimeType("plain/text");
 
-                String path = fileServer + "files/";
-
-                send(path, path, uploadDto, f);
+                path = fileServer + "files/";
+                root = path;
             }
             default -> {
                 throw new RuntimeException("Invalid file type");
             }
         }
+        return send(root, path, uploadDto, f);
     }
 
     @PostConstruct
@@ -158,9 +158,9 @@ public class FileUploaderService {
             upload(trackFile, FileType.Track);
         }
 
-        List<ImageEnitiy> imageList = imageRepository.findAll();
+        List<ImageEntity> imageList = imageRepository.findAll();
 
-        for (ImageEnitiy e : imageList) {
+        for (ImageEntity e : imageList) {
 
             // Send big
 

@@ -25,7 +25,7 @@ public class PrimaryAlbumEntity {
     private AlbumTypeEntity albumTypeEntity;
 
     @OneToOne(fetch = FetchType.EAGER)
-    private ImageEnitiy image;
+    private ImageEntity image;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<AuthorEntity> authors;

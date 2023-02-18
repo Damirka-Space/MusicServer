@@ -197,15 +197,15 @@ public class AlbumService {
             byte[] f = gson.fromJson(albumUploadDto.getImage(), byte[].class);
             MultipartFile bigImageFile = new MockMultipartFile(album.getTitle(),
                     album.getTitle() + "-" + album.getId() + ".jpg", "image/jpeg", f);
-            album.setImage(imageService.saveImage(bigImageFile, album.getTitle() + "-" + album.getId()));
 
             // Send big image
+            long id = fileUploaderService.upload(bigImageFile, FileUploaderService.FileType.Image);
 
-            fileUploaderService.upload(bigImageFile, FileUploaderService.FileType.Image);
+            // save image
+            album.setImage(imageService.saveImage(id, bigImageFile, album.getTitle() + "-" + album.getId()));
 
             // Send medium
-
-            ImageEnitiy e = album.getImage();
+            ImageEntity e = album.getImage();
 
             byte[] mediumImg = imageService.getMediumImage(album.getImage().getId());
 
@@ -214,9 +214,7 @@ public class AlbumService {
 
             fileUploaderService.upload(mediumImageFile, FileUploaderService.FileType.MediumImage);
 
-
             // Send small
-
             byte[] smallImg = imageService.getSmailImage(e.getId());
 
             MockMultipartFile smallImageFile = new MockMultipartFile(e.getUrl(),
@@ -254,29 +252,36 @@ public class AlbumService {
                 trackEntity = new TrackEntity();
                 trackEntity.setTitle(title);
                 trackEntity.setAuthors(authors);
+                trackEntity.setUpdated(now);
+                trackEntity.setGenres(genres);
 
                 trackEntity.setCreated(now);
+
+                trackEntities.add(trackEntity);
             }
+            else {
+                trackEntity.setUpdated(now);
+                trackEntity.setGenres(genres);
 
-            trackEntity.setUpdated(now);
-
-            // load genres for track
-            trackEntity.setGenres(genres);
-
-            trackEntities.add(trackEntity);
+                trackRepository.save(trackEntity);
+            }
         }
 
         // save all tracks
         for(int i = 0; i < trackEntities.size(); i ++) {
-            trackEntities.get(i).setAlbum(album);
-            trackEntities.set(i, trackRepository.save(trackEntities.get(i)));
-
             TrackEntity t = trackEntities.get(i);
             MultipartFile trackFile = new MockMultipartFile(t.getTitle(),
                     t.getTitle() + ".mp3", "audio/mpeg", tracks[i].getTrack());
             fileService.saveTrack(t.getId(), trackFile);
 
-            fileUploaderService.upload(trackFile, FileUploaderService.FileType.Track);
+            long id = fileUploaderService.upload(trackFile, FileUploaderService.FileType.Track);
+
+            if(id != -1)
+                t.setId(id);
+
+            t.setAlbum(album);
+
+            trackEntities.set(i, trackRepository.save(t));
         }
 
         // Add track to album
