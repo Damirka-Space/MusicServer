@@ -79,7 +79,8 @@ public class FileUploaderService {
                         .uri(content)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .body(BodyInserters.fromValue(b.build()))
-                        .exchangeToMono(clientResponse -> clientResponse.bodyToMono(String.class)).blockOptional();
+                        .retrieve()
+                        .bodyToMono(String.class).blockOptional();
 
                 long id = Long.parseLong(content.substring(content.lastIndexOf('/') + 1));
                 return id;
