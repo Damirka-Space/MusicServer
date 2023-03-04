@@ -21,10 +21,9 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public void registerUser(UserRegistrationDto user) {
+    public UserEntity registerUser(UserRegistrationDto user) {
         UserEntity newUser = UserFactory.fromUserDto(user);
 
-        userRepository.save(newUser);
-
+        return userRepository.save(newUser);
     }
 }

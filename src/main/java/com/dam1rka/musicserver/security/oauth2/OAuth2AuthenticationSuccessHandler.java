@@ -1,6 +1,8 @@
 package com.dam1rka.musicserver.security.oauth2;
 
 import com.dam1rka.musicserver.dtos.UserRegistrationDto;
+import com.dam1rka.musicserver.entities.UserEntity;
+import com.dam1rka.musicserver.services.LikeService;
 import com.dam1rka.musicserver.services.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,9 +21,12 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
 
     private final UserService userService;
 
+    private final LikeService likeService;
+
     @Autowired
-    OAuth2AuthenticationSuccessHandler(UserService userService) {
+    OAuth2AuthenticationSuccessHandler(UserService userService, LikeService likeService) {
         this.userService = userService;
+        this.likeService = likeService;
     }
 
     @Override
@@ -49,7 +54,9 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
 
         newUser.setPassword(alphaNumericString(30));
 
-        userService.registerUser(newUser);
+        UserEntity registerUser = userService.registerUser(newUser);
+
+        likeService.initializeUser(registerUser);
 
         super.onAuthenticationSuccess(request, response, authentication);
     }

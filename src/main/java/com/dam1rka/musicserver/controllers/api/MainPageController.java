@@ -1,6 +1,6 @@
 package com.dam1rka.musicserver.controllers.api;
 
-import com.dam1rka.musicserver.services.MainPageService;
+import com.dam1rka.musicserver.services.PageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +11,11 @@ import java.security.Principal;
 @RestController
 public class MainPageController {
 
-    @Autowired
-    private MainPageService mainService;
+    private final PageService mainService;
+
+    public MainPageController(PageService mainService) {
+        this.mainService = mainService;
+    }
 
     @GetMapping("/main")
     public ResponseEntity<?> main(Principal principal) {

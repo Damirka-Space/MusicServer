@@ -16,5 +16,6 @@ public class TrackDto {
     private String url;
     private String imageUrl;
     private String metadataImageUrl;
+    private boolean liked;
 
 }

@@ -1,5 +1,6 @@
 package com.dam1rka.musicserver.services;
 
+import com.dam1rka.musicserver.dtos.AlbumDto;
 import com.dam1rka.musicserver.dtos.AlbumUploadDto;
 import com.dam1rka.musicserver.dtos.TrackDto;
 import com.dam1rka.musicserver.dtos.TrackUploadNewDto;
@@ -26,8 +27,8 @@ public class AlbumService {
     private AlbumTypeRepository albumTypeRepository;
     private ImageService imageService;
     private FileService fileService;
-
     private FileUploaderService fileUploaderService;
+    private LikeService likeService;
 
     @Value("${file-server}")
     private String fileServer;
@@ -35,7 +36,7 @@ public class AlbumService {
     @Autowired
     public AlbumService(PrimaryAlbumRepository primaryAlbumRepository, AlbumRepository albumRepository, TrackRepository trackRepository,
                         AuthorRepository authorRepository, GenreRepository genreRepository, ImageService imageService, FileService fileService,
-                        AlbumTypeRepository albumTypeRepository, FileUploaderService fileUploaderService) {
+                        AlbumTypeRepository albumTypeRepository, FileUploaderService fileUploaderService, LikeService likeService) {
         this.primaryAlbumRepository = primaryAlbumRepository;
         this.albumRepository = albumRepository;
         this.trackRepository = trackRepository;
@@ -45,20 +46,23 @@ public class AlbumService {
         this.imageService = imageService;
         this.fileService = fileService;
         this.fileUploaderService = fileUploaderService;
+        this.likeService = likeService;
     }
 
-    public AlbumEntity getAlbum(Long id) throws RuntimeException {
+    public AlbumDto getAlbum(UserEntity user, Long id) throws RuntimeException {
         AlbumEntity album = albumRepository.findById(id).orElse(null);
 
         if(Objects.isNull(album))
             throw new RuntimeException("Album not found");
 
-        album.setImageUrl(fileServer + "images/" + album.getImage().getId());
+        AlbumDto albumDto = AlbumDto.fromAlbumEntity(album, fileServer);
 
-        if(id == 1L) // Playlist - Всё в одном
-            album.getTracks().sort(Comparator.comparing(TrackEntity::getId).reversed());
+        albumDto.setImageUrl(fileServer + "images/" + album.getImage().getId());
 
-        return album;
+        if(Objects.nonNull(user))
+            albumDto.setLiked(likeService.containAlbum(user, album));
+
+        return albumDto;
     }
 
     public PrimaryAlbumEntity getPrimaryAlbum(Long id) throws RuntimeException {
@@ -69,10 +73,24 @@ public class AlbumService {
         return album;
     }
 
-    public List<TrackDto> getTracks(Long id) throws RuntimeException {
-        AlbumEntity album = getAlbum(id);
+    public List<TrackDto> getTracks(UserEntity user, long id) throws RuntimeException {
+        AlbumEntity album = albumRepository.findById(id).orElse(null);
+
+        if(Objects.isNull(album))
+            return null;
+
+        if(id == 1) // Плейлист - Всё в одном
+            album.getTracks().sort(Comparator.comparing(TrackEntity::getId).reversed());
 
         List<TrackDto> tracks = new LinkedList<>();
+
+        List<TrackEntity> likedTracks;
+
+        if(Objects.nonNull(user))
+            likedTracks = likeService.getLikedByType(user, AlbumTypeEnum.PLAYLIST).get(0).getTracks();
+        else
+            likedTracks = new LinkedList<>();
+
 
         for(TrackEntity track : album.getTracks()) {
             TrackDto t = new TrackDto();
@@ -80,6 +98,8 @@ public class AlbumService {
             t.setId(track.getId());
             t.setTitle(track.getTitle());
             t.setUrl(fileServer + "tracks/" + t.getId());
+
+            t.setLiked(likedTracks.contains(track));
 
             List<AuthorEntity> authors = track.getAuthors();
 

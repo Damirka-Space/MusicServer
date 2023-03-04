@@ -1,6 +1,6 @@
 package com.dam1rka.musicserver.controllers;
 
-import com.dam1rka.musicserver.dtos.EntryMainDto;
+import com.dam1rka.musicserver.dtos.PageDto;
 import com.dam1rka.musicserver.services.FileService;
 import com.dam1rka.musicserver.services.TrackService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class TestRestController {
 
 
     @PostMapping(value = "/add")
-    public ResponseEntity<?> test(@RequestBody EntryMainDto dto) {
+    public ResponseEntity<?> test(@RequestBody PageDto dto) {
 
         System.out.println(dto);
 

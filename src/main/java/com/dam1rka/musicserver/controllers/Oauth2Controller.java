@@ -2,6 +2,7 @@ package com.dam1rka.musicserver.controllers;
 
 import com.dam1rka.musicserver.entities.UserEntity;
 import com.dam1rka.musicserver.repositories.UserRepository;
+import com.dam1rka.musicserver.services.LikeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,15 @@ import java.util.Objects;
 @RestController
 public class Oauth2Controller {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Value("${website}")
     private String website;
+
+    @Autowired
+    public  Oauth2Controller(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @GetMapping(value = "/login")
     public void login(HttpServletResponse response) throws IOException {
@@ -47,13 +52,12 @@ public class Oauth2Controller {
     public Map<String, OAuth2Error> authorizationFailed(HttpServletRequest request) {
         String errorCode = request.getParameter(OAuth2ParameterNames.ERROR);
         if (StringUtils.hasText(errorCode)) {
-            Map<String, OAuth2Error> v = Collections.singletonMap("error",
+            return Collections.singletonMap("error",
                     new OAuth2Error(
                             errorCode,
                             request.getParameter(OAuth2ParameterNames.ERROR_DESCRIPTION),
                             request.getParameter(OAuth2ParameterNames.ERROR_URI))
             );
-            return v;
         }
 
         return null;
