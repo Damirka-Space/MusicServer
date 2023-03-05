@@ -16,7 +16,7 @@ public class LikedAlbums {
     @OneToOne(fetch = FetchType.LAZY)
     private UserEntity user;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<AlbumEntity> albums;
 
 }

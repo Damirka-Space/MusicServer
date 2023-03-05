@@ -66,18 +66,17 @@ public class LikeService {
     }
 
     public List<AlbumEntity> getLikedByType(UserEntity user, AlbumTypeEnum albumType) {
-        LikedAlbums l = likedAlbumsRepository.findByUserAndAlbumType(user.getId(),
+        List<AlbumEntity> albums = albumRepository.findLikedAlbumsByUserAndAlbumType(user.getId(),
                 (long) albumType.ordinal() + 1);
 
-        if(Objects.nonNull(l))
-            return l.getAlbums();
+        if(Objects.nonNull(albums))
+            return albums;
 
         return new LinkedList<>();
     }
 
     public void likeTrack(UserEntity user, long trackId) {
-        LikedAlbums l = likedAlbumsRepository.findByUserAndAlbumType(user.getId(), AlbumTypeEnum.PLAYLIST.ordinal() + 1);
-        AlbumEntity likedAlbums = l.getAlbums().get(0);
+        AlbumEntity likedAlbums = albumRepository.findLikedAlbumsByUserAndAlbumType(user.getId(), AlbumTypeEnum.PLAYLIST.ordinal() + 1).get(0);
 
         Optional<TrackEntity> track =  trackRepository.findById(trackId);
 
