@@ -19,16 +19,16 @@ import java.util.stream.Collectors;
 @Service
 public class AlbumService {
 
-    private PrimaryAlbumRepository primaryAlbumRepository;
-    private AlbumRepository albumRepository;
-    private TrackRepository trackRepository;
-    private AuthorRepository authorRepository;
-    private GenreRepository genreRepository;
-    private AlbumTypeRepository albumTypeRepository;
-    private ImageService imageService;
-    private FileService fileService;
-    private FileUploaderService fileUploaderService;
-    private LikeService likeService;
+    private final PrimaryAlbumRepository primaryAlbumRepository;
+    private final AlbumRepository albumRepository;
+    private final TrackRepository trackRepository;
+    private final AuthorRepository authorRepository;
+    private final GenreRepository genreRepository;
+    private final AlbumTypeRepository albumTypeRepository;
+    private final ImageService imageService;
+    private final FileService fileService;
+    private final FileUploaderService fileUploaderService;
+    private final LikeService likeService;
 
     @Value("${file-server}")
     private String fileServer;
@@ -121,7 +121,7 @@ public class AlbumService {
                 t.setAlbum(albumEntity.getTitle());
 
                 long imageId = albumEntity.getImage().getId();
-                t.setImageUrl(fileServer + "smallImages/" + imageId);
+                t.setImageUrl(fileServer + "mediumImages/" + imageId);
                 t.setMetadataImageUrl(fileServer + "images/" + imageId);
             }
 
