@@ -31,11 +31,10 @@ public class AlbumController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<?> getAlbum(@PathVariable("id") Long id, Principal principal, HttpServletResponse response) {
+    public ResponseEntity<?> getAlbum(@PathVariable("id") Long id, Principal principal) {
         try {
             UserEntity user = null;
             if(Objects.nonNull(principal)) {
-                response.addHeader("Access-Control-Allow-Credentials", "true");
                 user = userService.getUserByUsername(principal.getName());
             }
             return ResponseEntity.ok(albumService.getAlbum(user, id));
@@ -45,11 +44,10 @@ public class AlbumController {
     }
 
     @GetMapping("/tracks/get/{id}")
-    public ResponseEntity<?> getTracks(@PathVariable("id") Long id, Principal principal, HttpServletResponse response) {
+    public ResponseEntity<?> getTracks(@PathVariable("id") Long id, Principal principal) {
         try {
             UserEntity user = null;
             if(Objects.nonNull(principal)) {
-                response.addHeader("Access-Control-Allow-Credentials", "true");
                 user = userService.getUserByUsername(principal.getName());
             }
             return ResponseEntity.ok(albumService.getTracks(user, id));

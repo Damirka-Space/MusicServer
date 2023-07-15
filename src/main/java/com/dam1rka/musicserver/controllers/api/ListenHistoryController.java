@@ -28,8 +28,8 @@ public class ListenHistoryController {
     }
 
     @GetMapping("/save/track/{id}")
-    public ResponseEntity<?> save(@PathVariable("id") long id, Principal principal, HttpServletResponse response) {
-        UserEntity user = userService.checkUser(principal, response);
+    public ResponseEntity<?> save(@PathVariable("id") long id, Principal principal) {
+        UserEntity user = userService.checkUser(principal);
 
         if(Objects.nonNull(user)) {
             listenHistoryService.saveToHistory(user, id);
@@ -40,8 +40,8 @@ public class ListenHistoryController {
     }
 
     @GetMapping("/show/all")
-    public ResponseEntity<?> showAll(Principal principal, HttpServletResponse response) {
-        UserEntity user = userService.checkUser(principal, response);
+    public ResponseEntity<?> showAll(Principal principal) {
+        UserEntity user = userService.checkUser(principal);
 
         if(Objects.nonNull(user))
             return ResponseEntity.ok(listenHistoryService.getHistory(user));

@@ -29,8 +29,8 @@ public class LikeController {
 
     // Like/dislike album
     @GetMapping(value = "/album/{id}")
-    public ResponseEntity<?> likeAlbum(@PathVariable long id, Principal principal, HttpServletResponse response) {
-        UserEntity user = userService.checkUser(principal, response);
+    public ResponseEntity<?> likeAlbum(@PathVariable long id, Principal principal) {
+        UserEntity user = userService.checkUser(principal);
         if(Objects.nonNull(user)) {
             likeService.likeAlbum(user, id);
             return ResponseEntity.ok().build();
@@ -40,8 +40,8 @@ public class LikeController {
 
     // Like/dislike track
     @GetMapping(value = "/track/{id}")
-    public ResponseEntity<?> likeTrack(@PathVariable long id, Principal principal, HttpServletResponse response) {
-        UserEntity user = userService.checkUser(principal, response);
+    public ResponseEntity<?> likeTrack(@PathVariable long id, Principal principal) {
+        UserEntity user = userService.checkUser(principal);
         if(Objects.nonNull(user)) {
             likeService.likeTrack(user, id);
             return ResponseEntity.ok().build();

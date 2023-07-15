@@ -153,7 +153,27 @@ public class AlbumService {
         return imageService.getMediumImage(loadPrimaryAlbum(id).getImage().getId());
     }
 
+    public void uploadTest(AlbumUploadDto albumUploadDto) {
+
+        AlbumEntity album = new AlbumEntity();
+        album.setTitle(albumUploadDto.getTitle());
+
+        Gson gson = new Gson();
+
+        // create image
+        {
+            byte[] f = gson.fromJson(albumUploadDto.getImage(), byte[].class);
+            MultipartFile bigImageFile = new MockMultipartFile(album.getTitle(),
+                    album.getTitle() + "-" + album.getId() + ".jpg", "image/jpeg", f);
+
+            // Send big image
+            long id = fileUploaderService.upload(bigImageFile, FileUploaderService.FileType.Image);
+        }
+    }
+
     public void uploadAlbum(AlbumUploadDto albumUploadDto) {
+//        uploadTest(albumUploadDto);
+
         List<TrackEntity> trackEntities = new LinkedList<>();
         Date now = new Date();
 

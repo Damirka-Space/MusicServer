@@ -13,7 +13,9 @@ public class UserFactory {
         UserEntity newUser = new UserEntity();
 
         newUser.setUsername(user.getUsername());
-        newUser.setEmail(user.getEmail());
+
+        if(Objects.nonNull(user.getEmail()))
+            newUser.setEmail(user.getEmail());
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
