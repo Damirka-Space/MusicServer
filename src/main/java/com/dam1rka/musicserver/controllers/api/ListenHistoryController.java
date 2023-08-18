@@ -39,6 +39,18 @@ public class ListenHistoryController {
         return ResponseEntity.badRequest().body("You're not authorized");
     }
 
+    @GetMapping("/save/album/{id}")
+    public ResponseEntity<?> saveAlbum(@PathVariable("id") long id, Principal principal) {
+        UserEntity user = userService.checkUser(principal);
+
+        if(Objects.nonNull(user)) {
+            listenHistoryService.saveAlbumToHistory(user, id);
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.badRequest().body("You're not authorized");
+    }
+
     @GetMapping("/show/all")
     public ResponseEntity<?> showAll(Principal principal) {
         UserEntity user = userService.checkUser(principal);

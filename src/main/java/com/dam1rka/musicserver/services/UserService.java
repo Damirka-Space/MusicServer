@@ -1,13 +1,10 @@
 package com.dam1rka.musicserver.services;
 
-import com.dam1rka.musicserver.builders.UserFactory;
-import com.dam1rka.musicserver.dtos.UserRegistrationDto;
 import com.dam1rka.musicserver.entities.UserEntity;
 import com.dam1rka.musicserver.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,7 +12,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.security.Principal;
 import java.util.Objects;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor

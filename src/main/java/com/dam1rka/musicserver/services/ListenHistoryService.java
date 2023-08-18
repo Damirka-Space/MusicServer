@@ -1,27 +1,28 @@
 package com.dam1rka.musicserver.services;
 
 import com.dam1rka.musicserver.dtos.ListenHistoryDto;
-import com.dam1rka.musicserver.entities.ListenHistoryEntity;
-import com.dam1rka.musicserver.entities.TrackEntity;
-import com.dam1rka.musicserver.entities.UserEntity;
+import com.dam1rka.musicserver.entities.*;
+import com.dam1rka.musicserver.repositories.AlbumListenHistoryRepository;
+import com.dam1rka.musicserver.repositories.AlbumRepository;
 import com.dam1rka.musicserver.repositories.ListenHistoryRepository;
 import com.dam1rka.musicserver.repositories.TrackRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class ListenHistoryService {
 
+    private final AlbumListenHistoryRepository albumListenHistoryRepository;
     private final ListenHistoryRepository listenHistoryRepository;
     private final TrackRepository trackRepository;
-
-    @Autowired
-    public ListenHistoryService(ListenHistoryRepository listenHistoryRepository, TrackRepository trackRepository) {
-        this.listenHistoryRepository = listenHistoryRepository;
-        this.trackRepository = trackRepository;
-    }
+    private final AlbumRepository albumRepository;
 
     public void saveToHistory(UserEntity user, long trackId) {
         TrackEntity track = trackRepository.findById(trackId).orElse(null);
@@ -34,6 +35,31 @@ public class ListenHistoryService {
 
             listenHistoryRepository.save(listenHistory);
         }
+    }
+
+    public void saveAlbumToHistory(UserEntity user, long albumId) {
+        AlbumEntity album = albumRepository.findById(albumId).orElse(null);
+
+        if(Objects.nonNull(album)) {
+            AlbumListenHistoryEntity listenHistory = new AlbumListenHistoryEntity();
+            listenHistory.setUser(user);
+            listenHistory.setListened(new Date());
+            listenHistory.setAlbum(album);
+
+            albumListenHistoryRepository.save(listenHistory);
+        }
+    }
+
+    public List<AlbumEntity> getRecentlyListenedAlbums(UserEntity user) {
+        List<AlbumListenHistoryEntity> historyEntities = albumListenHistoryRepository.findAllByUserOrderByListenedDesc(user, PageRequest.of(0, 10));
+        List<AlbumEntity> albums = new LinkedList<>();
+
+        historyEntities.stream().map(AlbumListenHistoryEntity::getAlbum).forEach((album -> {
+            if(!albums.contains(album))
+                albums.add(album);
+        }));
+
+        return albums;
     }
 
     public List<ListenHistoryDto> getHistory(UserEntity user) {

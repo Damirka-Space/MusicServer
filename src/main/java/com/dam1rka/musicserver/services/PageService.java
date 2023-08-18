@@ -8,14 +8,17 @@ import com.dam1rka.musicserver.entities.AlbumTypeEnum;
 import com.dam1rka.musicserver.entities.BlockEntity;
 import com.dam1rka.musicserver.entities.UserEntity;
 import com.dam1rka.musicserver.repositories.BlockRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class PageService {
 
     @Value("${file-server}")
@@ -23,16 +26,32 @@ public class PageService {
 
     private final BlockRepository blockRepository;
     private final LikeService likeService;
+    private final ListenHistoryService listenHistoryService;
 
-    public PageService(BlockRepository blockRepository, LikeService likeService) {
-        this.blockRepository = blockRepository;
-        this.likeService = likeService;
-    }
 
-    public PageDto loadMainBlocks() {
+    public PageDto loadMainBlocks(UserEntity user) {
         PageDto pageDto = new PageDto();
         List<BlockEntity> blockEntities = blockRepository.findAll();
         List<BlockDto> blocks = new LinkedList<>();
+
+        // Recently listened block
+
+        if(Objects.nonNull(user)) {
+            List<AlbumEntity> albums =  listenHistoryService.getRecentlyListenedAlbums(user);
+
+            if(albums.size() > 0) {
+                BlockDto blockDto = new BlockDto();
+
+                blockDto.setTitle("Вы недавно слушали");
+
+                List<AlbumDto> albumDtos = new LinkedList<>();
+
+                albums.forEach((album -> albumDtos.add(AlbumDto.fromAlbumEntity(album, fileServer))));
+
+                blockDto.setAlbums(albumDtos);
+                blocks.add(blockDto);
+            }
+        }
 
         for(BlockEntity block : blockEntities) {
             BlockDto blockDto = new BlockDto();
