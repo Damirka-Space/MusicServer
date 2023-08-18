@@ -7,10 +7,12 @@ import com.dam1rka.musicserver.entities.AlbumEntity;
 import com.dam1rka.musicserver.entities.AlbumTypeEnum;
 import com.dam1rka.musicserver.entities.BlockEntity;
 import com.dam1rka.musicserver.entities.UserEntity;
+import com.dam1rka.musicserver.repositories.AlbumRepository;
 import com.dam1rka.musicserver.repositories.BlockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -25,6 +27,7 @@ public class PageService {
     private String fileServer;
 
     private final BlockRepository blockRepository;
+    private final AlbumRepository albumRepository;
     private final LikeService likeService;
     private final ListenHistoryService listenHistoryService;
 
@@ -63,6 +66,19 @@ public class PageService {
 
             for(AlbumEntity album : block.getAlbums())
                 albumDtos.add(AlbumDto.fromAlbumEntity(album, fileServer));
+
+            blockDto.setAlbums(albumDtos);
+            blocks.add(blockDto);
+        }
+
+        {
+            BlockDto blockDto = new BlockDto();
+
+            blockDto.setTitle("Новинки этого месяца");
+
+            List<AlbumDto> albumDtos = new LinkedList<>();
+
+            albumRepository.findAllOrderByCreated(PageRequest.of(0, 10)).forEach((album -> albumDtos.add(AlbumDto.fromAlbumEntity(album, fileServer))));
 
             blockDto.setAlbums(albumDtos);
             blocks.add(blockDto);

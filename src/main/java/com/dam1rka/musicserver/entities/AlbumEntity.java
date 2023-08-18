@@ -10,6 +10,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.lang.NonNull;
 
 import jakarta.persistence.*;
+import org.springframework.lang.Nullable;
+
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +49,9 @@ public class AlbumEntity {
     @LastModifiedDate
     private Date updated;
 
-    public AlbumEntity() {
+    @Column(columnDefinition = "boolean default false")
+    private boolean deleted = false;
 
+    public AlbumEntity() {
     }
 }
