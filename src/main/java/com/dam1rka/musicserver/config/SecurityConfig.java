@@ -18,7 +18,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                     authorizationManagerRequestMatcherRegistry
-                            .requestMatchers("/main/**", "/album/**").permitAll()
+                            .requestMatchers("/main/**", "/album/**", "/channel/**").permitAll()
                             .anyRequest().hasAuthority("SCOPE_music-server.read");
                 }).oauth2ResourceServer(resourceServerConfigurer -> resourceServerConfigurer.opaqueToken(Customizer.withDefaults()));
 
