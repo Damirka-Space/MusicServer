@@ -35,32 +35,44 @@ public class ChannelService {
         channelRepository.save(channel);
     }
 
+    public ChannelListDto getChannel(Long channelId) {
+        ChannelEntity channel = channelRepository.findById(channelId).orElse(null);
+
+        if(Objects.nonNull(channel)) {
+            return convertToDto(channel);
+        }
+
+        return null;
+    }
+
+    private ChannelListDto convertToDto(ChannelEntity channel) {
+        ChannelListDto dto = new ChannelListDto();
+
+        dto.setId(channel.getId());
+        dto.setTitle(channel.getTitle());
+        dto.setDescription(channel.getDescription());
+        dto.setOwnerUsername(channel.getOwner().getUsername());
+
+        List<ChannelUserEntity> userConnections = channel.getUsers();
+
+        Long count = userConnections.stream()
+                .map(ChannelUserEntity::getAction)
+                .filter(channelActionEnum -> channelActionEnum.equals(ChannelActionEnum.CONNECTED))
+                .count() - userConnections.stream()
+                .map(ChannelUserEntity::getAction)
+                .filter(channelActionEnum -> channelActionEnum.equals(ChannelActionEnum.DISCONNECTED))
+                .count();
+
+        dto.setUserCount(count);
+        return dto;
+    }
+
     public List<ChannelListDto> getChannels() {
         List<ChannelEntity> channels = channelRepository.findAll();
 
         List<ChannelListDto> dtos = new LinkedList<>();
 
-        channels.forEach((channel) -> {
-            ChannelListDto d = new ChannelListDto();
-            d.setId(channel.getId());
-            d.setTitle(channel.getTitle());
-            d.setDescription(channel.getDescription());
-            d.setOwnerUsername(channel.getOwner().getUsername());
-
-            List<ChannelUserEntity> userConnections = channel.getUsers();
-
-            Long count = userConnections.stream()
-                    .map(ChannelUserEntity::getAction)
-                    .filter(channelActionEnum -> channelActionEnum.equals(ChannelActionEnum.CONNECTED))
-                    .count() - userConnections.stream()
-                            .map(ChannelUserEntity::getAction)
-                            .filter(channelActionEnum -> channelActionEnum.equals(ChannelActionEnum.DISCONNECTED))
-                            .count();
-
-            d.setUserCount(count);
-
-            dtos.add(d);
-        });
+        channels.forEach((channel) -> dtos.add(convertToDto(channel)));
 
         return dtos;
     }

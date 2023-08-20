@@ -40,6 +40,17 @@ public class ChannelController {
         return ResponseEntity.badRequest().body("You're not authorized");
     }
 
+    @GetMapping("/get/{channelId}")
+    public ResponseEntity<?> getChannel(@PathVariable() Long channelId, Principal principal) {
+        UserEntity user = userService.checkUser(principal);
+
+        if(Objects.nonNull(user)) {
+            return ResponseEntity.ok(channelService.getChannel(channelId));
+        }
+
+        return ResponseEntity.badRequest().body("You're not authorized");
+    }
+
     @GetMapping("/{channelId}/chat")
     public ResponseEntity<?> getChannelChat(@PathVariable() Long channelId, Principal principal) {
         UserEntity user = userService.checkUser(principal);
