@@ -13,10 +13,11 @@ public class ChannelMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 2048)
     private String message;
 
     private Date created;
 
-    @OneToOne
+    @ManyToOne
     private UserEntity sender;
 }

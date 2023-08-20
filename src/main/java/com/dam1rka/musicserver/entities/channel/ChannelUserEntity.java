@@ -17,6 +17,6 @@ public class ChannelUserEntity {
 
     private ChannelActionEnum action;
 
-    @OneToOne
+    @ManyToOne
     private UserEntity user;
 }

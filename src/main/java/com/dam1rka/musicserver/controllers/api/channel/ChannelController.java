@@ -2,15 +2,17 @@ package com.dam1rka.musicserver.controllers.api.channel;
 
 import com.dam1rka.musicserver.dtos.channel.ClientChannelPayload;
 import com.dam1rka.musicserver.dtos.channel.CreateChannelDto;
+import com.dam1rka.musicserver.dtos.channel.ServerChannelPayload;
 import com.dam1rka.musicserver.entities.UserEntity;
 import com.dam1rka.musicserver.entities.channel.ChannelActionEnum;
 import com.dam1rka.musicserver.services.UserService;
-import com.dam1rka.musicserver.services.channel.ChannelEventService;
+//import com.dam1rka.musicserver.services.channel.ChannelEventService;
 import com.dam1rka.musicserver.services.channel.ChannelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +27,7 @@ public class ChannelController {
 
     private final UserService userService;
     private final ChannelService channelService;
-    private final ChannelEventService messagingService;
+    private final SimpMessagingTemplate messagingService;
 
     @GetMapping("/list")
     public ResponseEntity<?> getChannels(Principal principal) {
@@ -74,9 +76,16 @@ public class ChannelController {
                 case MESSAGE -> {
                     channelService.saveMessage(payload.getChannelId(), user, payload.getContent());
 
-                    messagingService.convertAndSendToChannel(
+                    ServerChannelPayload serverPayload = new ServerChannelPayload();
+                    serverPayload.setChannelId(payload.getChannelId());
+                    serverPayload.setCreated(payload.getCreated());
+                    serverPayload.setAction(payload.getAction());
+                    serverPayload.setContent(payload.getContent());
+                    serverPayload.setFrom(user.getUsername());
+
+                    messagingService.convertAndSendToUser(
                             payload.getChannelId().toString(),"/queue/events",
-                            payload);
+                            serverPayload);
                 }
                 case PLAY -> {
                 }

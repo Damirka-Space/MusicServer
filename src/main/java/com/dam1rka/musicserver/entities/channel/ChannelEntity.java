@@ -26,7 +26,7 @@ public class ChannelEntity {
     @OneToOne
     private ChannelQueue queue;
 
-    @OneToOne
+    @ManyToOne
     private UserEntity owner;
 
     @OneToMany

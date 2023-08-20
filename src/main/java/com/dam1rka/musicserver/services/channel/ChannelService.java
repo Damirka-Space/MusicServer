@@ -46,11 +46,18 @@ public class ChannelService {
             d.setTitle(channel.getTitle());
             d.setDescription(channel.getDescription());
             d.setOwnerUsername(channel.getOwner().getUsername());
-            d.setUserCount(channel.getUsers().stream()
-                    .sorted(Comparator.comparing(ChannelUserEntity::getCreated))
+
+            List<ChannelUserEntity> userConnections = channel.getUsers();
+
+            Long count = userConnections.stream()
                     .map(ChannelUserEntity::getAction)
                     .filter(channelActionEnum -> channelActionEnum.equals(ChannelActionEnum.CONNECTED))
-                    .count());
+                    .count() - userConnections.stream()
+                            .map(ChannelUserEntity::getAction)
+                            .filter(channelActionEnum -> channelActionEnum.equals(ChannelActionEnum.DISCONNECTED))
+                            .count();
+
+            d.setUserCount(count);
 
             dtos.add(d);
         });
@@ -64,11 +71,14 @@ public class ChannelService {
         List<ChannelMessageDto> messages = new LinkedList<>();
 
         if(Objects.nonNull(channel)) {
-            channel.getChat().getMessages().forEach((message) -> {
+            channel.getChat().getMessages()
+                    .stream().sorted(Comparator.comparing(ChannelMessage::getCreated))
+                    .forEach((message) -> {
                 ChannelMessageDto msg = new ChannelMessageDto();
                 msg.setMessage(message.getMessage());
                 msg.setCreated(message.getCreated());
                 msg.setSender(message.getSender().getUsername());
+                messages.add(msg);
             });
         }
 
