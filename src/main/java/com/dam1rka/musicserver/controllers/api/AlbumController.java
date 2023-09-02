@@ -56,33 +56,6 @@ public class AlbumController {
         }
     }
 
-    @GetMapping(value="/image/get/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<?> getImage(@PathVariable("id") Long id) {
-        try {
-            return ResponseEntity.ok(albumService.loadImage(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @GetMapping(value="/image/small/get/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<?> getSmallImage(@PathVariable("id") Long id) {
-        try {
-            return ResponseEntity.ok().cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS)).body(albumService.loadSmallImage(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @GetMapping(value="/image/medium/get/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<?> getMediumImage(@PathVariable("id") Long id) {
-        try {
-            return ResponseEntity.ok().cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS)).body(albumService.loadMediumImage(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
     @PostMapping(value = "/upload/")
     public ResponseEntity<?> uploadAlbum(AlbumUploadDto albumUploadDto) {
         try {

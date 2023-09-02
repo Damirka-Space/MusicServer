@@ -7,6 +7,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.lang.NonNull;
 
 import jakarta.persistence.*;
+import org.springframework.lang.Nullable;
+
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +39,9 @@ public class TrackEntity {
     private Date created;
     @LastModifiedDate
     private Date updated;
+
+    @Nullable
+    private Long fileId;
 
     public TrackEntity() {
 

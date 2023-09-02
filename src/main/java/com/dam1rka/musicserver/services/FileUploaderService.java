@@ -70,7 +70,8 @@ public class FileUploaderService {
             if(res.isPresent()) {
                 Gson gson = new Gson();
                 FsResponeDto fsResponeDto = gson.fromJson(res.get(), FsResponeDto.class);
-                String content = fsResponeDto.get_links().getAsJsonObject("self").get("href").getAsString();
+                String content = fsResponeDto.get_links().getAsJsonObject("content").get("href").getAsString();
+                String idStr = fsResponeDto.get_links().getAsJsonObject("self").get("href").getAsString();
 
                 MultipartBodyBuilder b = new MultipartBodyBuilder();
                 b.part("file", file.getFile().getResource());
@@ -82,7 +83,7 @@ public class FileUploaderService {
                         .retrieve()
                         .bodyToMono(String.class).blockOptional();
 
-                long id = Long.parseLong(content.substring(content.lastIndexOf('/') + 1));
+                long id = Long.parseLong(idStr.substring(idStr.lastIndexOf('/') + 1));
                 return id;
             }
             else {

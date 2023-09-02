@@ -28,10 +28,10 @@ public class AlbumEntity {
     @NonNull
     private String description;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     private AlbumTypeEntity albumTypeEntity;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     private ImageEntity image;
 
     @JsonInclude

@@ -110,25 +110,21 @@ public class ImageService {
     }
 
     public ImageEntity saveImage(long id, MultipartFile image, String album) {
+        ImageEntity imageEnitiy = new ImageEntity();
+
         Date now = new Date();
-        ImageEntity imageEnitiy = imageRepository.findByUrl(album);
+        imageEnitiy.setFileId(id);
+        imageEnitiy.setUrl(album);
+        imageEnitiy.setCreated(now);
+        imageEnitiy.setUpdated(now);
+        imageEnitiy = imageRepository.save(imageEnitiy);
 
-        if(Objects.isNull(imageEnitiy)) {
-            imageEnitiy = new ImageEntity();
+        fileService.saveImage(image, album);
 
-            if(id != -1)
-                imageEnitiy.setId(id);
+        // create small and medium images
+        resizeAndSaveImage(minExt, album, min, min);
+        resizeAndSaveImage(mediumExt, album, medium, medium);
 
-            imageEnitiy.setUrl(album);
-            imageEnitiy.setCreated(now);
-            imageEnitiy.setUpdated(now);
-            imageEnitiy = imageRepository.save((imageEnitiy));
-            fileService.saveImage(image, album);
-
-            // create small and medium images
-            resizeAndSaveImage(minExt, album, min, min);
-            resizeAndSaveImage(mediumExt, album, medium, medium);
-        }
         return imageEnitiy;
     }
 

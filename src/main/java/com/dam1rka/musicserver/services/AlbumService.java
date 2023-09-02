@@ -7,7 +7,8 @@ import com.dam1rka.musicserver.dtos.TrackUploadNewDto;
 import com.dam1rka.musicserver.entities.*;
 import com.dam1rka.musicserver.repositories.*;
 import com.google.gson.Gson;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AlbumService {
 
-    private final PrimaryAlbumRepository primaryAlbumRepository;
     private final AlbumRepository albumRepository;
     private final TrackRepository trackRepository;
     private final AuthorRepository authorRepository;
@@ -33,22 +34,6 @@ public class AlbumService {
     @Value("${file-server}")
     private String fileServer;
 
-    @Autowired
-    public AlbumService(PrimaryAlbumRepository primaryAlbumRepository, AlbumRepository albumRepository, TrackRepository trackRepository,
-                        AuthorRepository authorRepository, GenreRepository genreRepository, ImageService imageService, FileService fileService,
-                        AlbumTypeRepository albumTypeRepository, FileUploaderService fileUploaderService, LikeService likeService) {
-        this.primaryAlbumRepository = primaryAlbumRepository;
-        this.albumRepository = albumRepository;
-        this.trackRepository = trackRepository;
-        this.authorRepository = authorRepository;
-        this.genreRepository = genreRepository;
-        this.albumTypeRepository = albumTypeRepository;
-        this.imageService = imageService;
-        this.fileService = fileService;
-        this.fileUploaderService = fileUploaderService;
-        this.likeService = likeService;
-    }
-
     public AlbumDto getAlbum(UserEntity user, Long id) throws RuntimeException {
         AlbumEntity album = albumRepository.findById(id).orElse(null);
 
@@ -57,20 +42,12 @@ public class AlbumService {
 
         AlbumDto albumDto = AlbumDto.fromAlbumEntity(album, fileServer);
 
-        albumDto.setImageUrl(fileServer + "images/" + album.getImage().getId());
+        albumDto.setImageUrl(fileServer + "images/" + album.getImage().getFileId());
 
         if(Objects.nonNull(user))
             albumDto.setLiked(likeService.containAlbum(user, album));
 
         return albumDto;
-    }
-
-    public PrimaryAlbumEntity getPrimaryAlbum(Long id) throws RuntimeException {
-        PrimaryAlbumEntity album = primaryAlbumRepository.findById(id).orElse(null);
-        if(Objects.isNull(album))
-            throw new RuntimeException("Album not found");
-
-        return album;
     }
 
     public List<TrackDto> getTracks(UserEntity user, long id) throws RuntimeException {
@@ -95,7 +72,7 @@ public class AlbumService {
         for(TrackEntity track : album.getTracks()) {
             TrackDto t = new TrackDto();
 
-            t.setId(track.getId());
+            t.setId(track.getFileId());
             t.setTitle(track.getTitle());
             t.setUrl(fileServer + "tracks/" + t.getId());
 
@@ -120,7 +97,7 @@ public class AlbumService {
                 t.setAlbumId(albumEntity.getId());
                 t.setAlbum(albumEntity.getTitle());
 
-                long imageId = albumEntity.getImage().getId();
+                long imageId = albumEntity.getImage().getFileId();
                 t.setImageUrl(fileServer + "mediumImages/" + imageId);
                 t.setMetadataImageUrl(fileServer + "images/" + imageId);
             }
@@ -130,51 +107,26 @@ public class AlbumService {
         return tracks;
     }
 
-    private PrimaryAlbumEntity loadPrimaryAlbum(Long id) {
-        PrimaryAlbumEntity album = getPrimaryAlbum(id);
-        if(Objects.isNull(album))
-            throw new RuntimeException("Album not found");
+//    public void uploadTest(AlbumUploadDto albumUploadDto) {
+//
+//        AlbumEntity album = new AlbumEntity();
+//        album.setTitle(albumUploadDto.getTitle());
+//
+//        // create image
+//        {
+////            byte[] f = gson.fromJson(albumUploadDto.getImage(), byte[].class);
+////            MultipartFile bigImageFile = new MockMultipartFile(album.getTitle(),
+////                    album.getTitle() + "-" + album.getId() + ".jpg", "image/jpeg", f);
+//
+//            MultipartFile bigImageFile = albumUploadDto.getImage();
+//
+//            // Send big image
+//            long id = fileUploaderService.upload(bigImageFile, FileUploaderService.FileType.Image);
+//        }
+//    }
 
-        if(Objects.isNull(album.getImage()))
-            throw new RuntimeException("No image in album");
-
-        return  album;
-    }
-
-    public byte[] loadImage(Long id) {
-        return imageService.getImage(loadPrimaryAlbum(id).getImage().getId());
-    }
-
-    public byte[] loadSmallImage(Long id) {
-        return imageService.getSmailImage(loadPrimaryAlbum(id).getImage().getId());
-    }
-
-    public byte[] loadMediumImage(Long id) {
-        return imageService.getMediumImage(loadPrimaryAlbum(id).getImage().getId());
-    }
-
-    public void uploadTest(AlbumUploadDto albumUploadDto) {
-
-        AlbumEntity album = new AlbumEntity();
-        album.setTitle(albumUploadDto.getTitle());
-
-        Gson gson = new Gson();
-
-        // create image
-        {
-            byte[] f = gson.fromJson(albumUploadDto.getImage(), byte[].class);
-            MultipartFile bigImageFile = new MockMultipartFile(album.getTitle(),
-                    album.getTitle() + "-" + album.getId() + ".jpg", "image/jpeg", f);
-
-            // Send big image
-            long id = fileUploaderService.upload(bigImageFile, FileUploaderService.FileType.Image);
-        }
-    }
-
+    @Transactional
     public void uploadAlbum(AlbumUploadDto albumUploadDto) {
-//        uploadTest(albumUploadDto);
-
-        List<TrackEntity> trackEntities = new LinkedList<>();
         Date now = new Date();
 
         List<GenreEntity> genres = new LinkedList<>();
@@ -193,10 +145,7 @@ public class AlbumService {
             genres.add(genre);
         }
 
-        Gson gson = new Gson();
-
         // create album
-
         AlbumEntity album;
 
         {
@@ -228,9 +177,10 @@ public class AlbumService {
             }
 
             album.setUpdated(now);
-
             album = albumRepository.save(album);
         }
+
+        Gson gson = new Gson();
 
         // create image
         {
@@ -242,11 +192,10 @@ public class AlbumService {
             long id = fileUploaderService.upload(bigImageFile, FileUploaderService.FileType.Image);
 
             // save image
-            album.setImage(imageService.saveImage(id, bigImageFile, album.getTitle() + "-" + album.getId()));
+            ImageEntity e = imageService.saveImage(id, bigImageFile, album.getTitle() + "-" + album.getId());
+            album.setImage(e);
 
             // Send medium
-            ImageEntity e = album.getImage();
-
             byte[] mediumImg = imageService.getMediumImage(album.getImage().getId());
 
             MockMultipartFile mediumImageFile = new MockMultipartFile(e.getUrl(),
@@ -264,7 +213,10 @@ public class AlbumService {
 
         }
 
+        album = albumRepository.save(album);
+
         TrackUploadNewDto[] tracks = gson.fromJson(albumUploadDto.getTracks(), TrackUploadNewDto[].class);
+        List<TrackEntity> trackEntities = new LinkedList<>();
 
         for(var track : tracks) {
             String title = track.getTitle();
@@ -295,16 +247,17 @@ public class AlbumService {
                 trackEntity.setUpdated(now);
                 trackEntity.setGenres(genres);
 
-                trackEntity.setCreated(now);
+                trackEntity.setDuration(track.getDuration());
 
-                trackEntities.add(trackEntity);
+                trackEntity.setCreated(now);
             }
             else {
+                trackEntity.setDuration(track.getDuration());
                 trackEntity.setUpdated(now);
                 trackEntity.setGenres(genres);
 
-                trackRepository.save(trackEntity);
             }
+            trackEntities.add(trackEntity);
         }
 
         // save all tracks
@@ -316,8 +269,7 @@ public class AlbumService {
 
             long id = fileUploaderService.upload(trackFile, FileUploaderService.FileType.Track);
 
-            if(id != -1)
-                t.setId(id);
+            t.setFileId(id);
 
             t.setAlbum(album);
 

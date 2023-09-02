@@ -26,9 +26,6 @@ public class TrackService {
     private AlbumTypeRepository albumTypeRepository;
 
     @Autowired
-    private PrimaryAlbumRepository primaryAlbumRepository;
-
-    @Autowired
     private AuthorRepository authorRepository;
 
     @Autowired

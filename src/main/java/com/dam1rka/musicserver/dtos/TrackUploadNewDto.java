@@ -7,4 +7,5 @@ public class TrackUploadNewDto {
     private String title;
     private String author;
     private byte[] track;
+    private Integer duration;
 }
