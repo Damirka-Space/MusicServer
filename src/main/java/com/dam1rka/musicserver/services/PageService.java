@@ -65,7 +65,7 @@ public class PageService {
 
             List<AlbumDto> albumDtos = new LinkedList<>();
 
-            block.getAlbums().parallelStream()
+            block.getAlbums().stream()
                     .sorted(Comparator.comparing(AlbumEntity::getCreated))
                     .forEach(album -> albumDtos.add(AlbumDto.fromAlbumEntity(album, fileServer)));
 
