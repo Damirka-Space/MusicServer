@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -64,8 +65,9 @@ public class PageService {
 
             List<AlbumDto> albumDtos = new LinkedList<>();
 
-            for(AlbumEntity album : block.getAlbums())
-                albumDtos.add(AlbumDto.fromAlbumEntity(album, fileServer));
+            block.getAlbums().parallelStream()
+                    .sorted(Comparator.comparing(AlbumEntity::getCreated))
+                    .forEach(album -> albumDtos.add(AlbumDto.fromAlbumEntity(album, fileServer)));
 
             blockDto.setAlbums(albumDtos);
             blocks.add(blockDto);
