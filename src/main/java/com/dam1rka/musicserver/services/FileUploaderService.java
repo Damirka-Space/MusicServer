@@ -25,7 +25,7 @@ import java.util.Optional;
 @Service
 public class FileUploaderService {
 
-    @Value("${file-server}")
+    @Value("${file-server-ip}")
     private String fileServer;
 
     @Value("${copy-boolean}")

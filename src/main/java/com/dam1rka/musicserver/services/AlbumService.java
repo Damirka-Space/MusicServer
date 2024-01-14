@@ -31,7 +31,7 @@ public class AlbumService {
     private final FileUploaderService fileUploaderService;
     private final LikeService likeService;
 
-    @Value("${file-server}")
+    @Value("${file-server-name}")
     private String fileServer;
 
     public AlbumDto getAlbum(UserEntity user, Long id) throws RuntimeException {

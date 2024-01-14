@@ -24,7 +24,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class PageService {
 
-    @Value("${file-server}")
+    @Value("${file-server-name}")
     private String fileServer;
 
     private final BlockRepository blockRepository;
