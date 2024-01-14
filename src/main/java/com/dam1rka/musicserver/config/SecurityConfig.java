@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                     authorizationManagerRequestMatcherRegistry
                             .requestMatchers("/album/upload/").access(telegramAuthorizationManager)
-                            .requestMatchers("/main/**", "/album/**", "/channel/**").permitAll()
+                            .requestMatchers("/main/**", "/album/**", "/channel/**", "/genre/**").permitAll()
                             .anyRequest().hasAuthority("SCOPE_music-server.read");
                 }).oauth2ResourceServer(resourceServerConfigurer -> resourceServerConfigurer.opaqueToken(Customizer.withDefaults()));
 
