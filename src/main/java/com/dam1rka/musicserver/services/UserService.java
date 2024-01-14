@@ -23,6 +23,8 @@ public class UserService {
 
     private final WebClient webClient;
 
+    private final LikeService likeService;
+
     @Value("${authserver}")
     private String authServer;
 
@@ -32,6 +34,14 @@ public class UserService {
                 .header("Authorization", token)
                 .retrieve()
                 .toEntity(UserEntity.class).blockOptional();
+    }
+
+    private UserEntity initUser(UserEntity user) {
+        user = userRepository.save(user);
+
+        likeService.initializeUser(user);
+
+        return user;
     }
 
     public UserEntity getUserByUsername(String username) {
@@ -55,7 +65,7 @@ public class UserService {
 
         if(res.isPresent() && res.get().getStatusCode() == HttpStatus.OK) {
             if(Objects.nonNull(res.get().getBody()))
-                return userRepository.save(res.get().getBody());
+                return initUser(res.get().getBody());
             throw new UserPrincipalNotFoundException("User not found");
         }
 

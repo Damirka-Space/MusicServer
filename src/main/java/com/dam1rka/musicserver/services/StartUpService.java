@@ -51,6 +51,6 @@ public class StartUpService {
 
         playlistService.updateAll();
 
-        initializeAllUsers();
+//        initializeAllUsers();
     }
 }
