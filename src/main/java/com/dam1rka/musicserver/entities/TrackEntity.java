@@ -43,6 +43,8 @@ public class TrackEntity {
     @Nullable
     private Long fileId;
 
+    private Integer position;
+
     public TrackEntity() {
 
     }

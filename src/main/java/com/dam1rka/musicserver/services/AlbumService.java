@@ -58,6 +58,8 @@ public class AlbumService {
 
         if(id == 1) // Плейлист - Всё в одном
             album.getTracks().sort(Comparator.comparing(TrackEntity::getId).reversed());
+        else if(id > 3)
+            album.getTracks().sort(Comparator.comparing(TrackEntity::getPosition));
 
         List<TrackDto> tracks = new LinkedList<>();
 
@@ -67,7 +69,6 @@ public class AlbumService {
             likedTracks = likeService.getLikedByType(user, AlbumTypeEnum.PLAYLIST).get(0).getTracks();
         else
             likedTracks = new LinkedList<>();
-
 
         for(TrackEntity track : album.getTracks()) {
             TrackDto t = new TrackDto();
@@ -258,6 +259,7 @@ public class AlbumService {
 
             }
             trackEntities.add(trackEntity);
+            trackEntity.setPosition(trackEntities.size());
         }
 
         // save all tracks

@@ -111,9 +111,9 @@ public class PlaylistService {
     }
 
     public void updateAll() {
-        updatePlaylistOfDay();
-        updatePlaylistOfWeek();
         updateAllInOnePlaylist();
+        updatePlaylistOfWeek();
+        updatePlaylistOfDay();
     }
 
     public void updatePlaylistOfDay() {
